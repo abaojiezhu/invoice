@@ -1,0 +1,537 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd"
+	 >
+<mapper namespace="InvoiceMapper" >
+
+	<select id="findById" parameterType="pd" resultType="pd">
+		select
+			*
+		from invoice t
+		where t.ID = #{invoiceId}
+	</select>
+
+	<select id="findInvoice" parameterType="pd" resultType="pd">
+		select
+			t.BILLING_NO,
+			t.BILLING_CODE,
+			t.CHECK_CODE,
+			t.BILLING_TIME,
+			t.FEE_WITHOUT_TAX,
+			t.TAX,
+			t.FEE
+		from invoice t
+		where t.USER_ID = #{userId}
+		and t.BILLING_NO = #{billingNo}
+		and t.BILLING_CODE = #{billingCode}
+	</select>
+	
+	<select id="listByUser" parameterType="pd" resultType="pd">
+		select
+			t.ID,
+    		t.BILLING_NO,
+    		t.BILLING_CODE,
+    		t.CHECK_CODE,
+    		t.BILLING_TIME,
+    		t.FEE_WITHOUT_TAX,
+    		t.TAX,
+    		t.FEE,
+    		t.INVOICE_TYPE_NAME,
+			t.SELLER_NAME,
+			t.SELLER_NUMBER,
+			t.SELLER_ADDRESS_AND_PHONE,
+			t.SELLER_BANK_ACCOUNT,
+			t.BUYER_NAME,
+			t.BUYER_NUMBER,
+			t.BUYER_ADDRESS_AND_PHONE,
+			t.BUYER_BANK_ACCOUNT,
+			t.CASHIER,
+			t.MAKER,
+			t.FUHR,
+			t.REMARKS,
+			t.VALID_STATE,
+			t.INVOICE_SOURCE,
+			t.FILE_NAME
+		from invoice t
+		where t.USER_ID = #{userId}
+		<if test="invoiceSource != null">
+			and t.INVOICE_SOURCE = #{invoiceSource}
+		</if>
+		<if test="billingTime != null">
+			and t.BILLING_TIME = #{billingTime}
+		</if>
+		<if test="keyword != null">
+			and t.SELLER_NAME like concat('%',#{keyword},'%')
+		</if>
+	</select>
+	
+	<insert id="save" parameterType="pd">
+		insert into invoice
+		<trim prefix="(" suffix=")" suffixOverrides="," >
+			<if test="id != null" >
+				ID,
+			</if>
+			<if test="userId != null" >
+				USER_ID,
+			</if>
+			<if test="billingNo != null" >
+				BILLING_NO,
+			</if>
+			<if test="billingCode != null" >
+				BILLING_CODE,
+			</if>
+			<if test="checkCode != null" >
+				CHECK_CODE,
+			</if>
+			<if test="billingTime != null" >
+				BILLING_TIME,
+			</if>
+			<if test="feeWithoutTax != null" >
+				FEE_WITHOUT_TAX,
+			</if>
+			<if test="tax != null" >
+				TAX,
+			</if>
+			<if test="fee != null" >
+				FEE,
+			</if>
+			<if test="invoiceTypeName != null" >
+				INVOICE_TYPE_NAME,
+			</if>
+			<if test="invoiceTypeCode != null" >
+				INVOICE_TYPE_CODE,
+			</if>
+			<if test="sellerName != null" >
+				SELLER_NAME,
+			</if>
+			<if test="sellerNumber != null" >
+				SELLER_NUMBER,
+			</if>
+			<if test="sellerAddressAndPhone != null" >
+				SELLER_ADDRESS_AND_PHONE,
+			</if>
+			<if test="sellerBankAccount != null" >
+				SELLER_BANK_ACCOUNT,
+			</if>
+			<if test="buyerName != null" >
+				BUYER_NAME,
+			</if>
+			<if test="buyerNumber != null" >
+				BUYER_NUMBER,
+			</if>
+			<if test="buyerAddressAndPhone != null" >
+				BUYER_ADDRESS_AND_PHONE,
+			</if>
+			<if test="buyerBankAccount != null" >
+				BUYER_BANK_ACCOUNT,
+			</if>
+			<if test="cashier != null" >
+				CASHIER,
+			</if>
+			<if test="maker != null" >
+				MAKER,
+			</if>
+			<if test="fuhr != null" >
+				FUHR,
+			</if>
+			<if test="remarks != null" >
+				REMARKS,
+			</if>
+			<if test="cardId != null" >
+				CARD_ID,
+			</if>
+			<if test="beginTime != null" >
+				BEGIN_TIME,
+			</if>
+			<if test="endTime != null" >
+				END_TIME,
+			</if>
+			<if test="openid != null" >
+				OPENID,
+			</if>
+			<if test="detail != null" >
+				DETAIL,
+			</if>
+			<if test="pdfUrl != null" >
+				PDF_URL,
+			</if>
+			<if test="tripPdfUrl != null" >
+				TRIP_PDF_URL,
+			</if>
+			<if test="reimburseStatus != null" >
+				REIMBURSE_STATUS,
+			</if>
+			<if test="checkDate != null" >
+				CHECK_DATE,
+			</if>
+			<if test="checkNum != null" >
+				CHECK_NUM,
+			</if>
+			<if test="taxDiskCode != null" >
+				TAX_DISK_CODE,
+			</if>
+			<if test="voidMark != null" >
+				VOID_MARK,
+			</if>
+			<if test="isBillmark != null" >
+				IS_BILLMARK,
+			</if>
+			<if test="yanpbs != null" >
+				YANPBS,
+			</if>
+			<if test="yanpztmc != null" >
+				YANPZTMC,
+			</if>
+			<if test="yanpzt != null" >
+				YANPZT,
+			</if>
+			<if test="validState != null" >
+				VALID_STATE,
+			</if>
+			<if test="validSource != null" >
+				VALID_SOURCE,
+			</if>
+			<if test="rawDataWeixin != null" >
+				RAW_DATA_WEIXIN,
+			</if>
+			<if test="rawDataGaopeng != null" >
+				RAW_DATA_GAOPENG,
+			</if>
+			<if test="invoiceSource != null" >
+				INVOICE_SOURCE,
+			</if>
+			<if test="fileName != null" >
+				FILE_NAME,
+			</if>
+			<if test="createdDt != null" >
+				CREATED_DT,
+			</if>
+			<if test="createdUserId != null" >
+				CREATED_USER_ID,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides="," >
+			<if test="id != null" >
+				#{id},
+			</if>
+			<if test="userId != null" >
+				#{userId},
+			</if>
+			<if test="billingNo != null" >
+				#{billingNo},
+			</if>
+			<if test="billingCode != null" >
+				#{billingCode},
+			</if>
+			<if test="checkCode != null" >
+				#{checkCode},
+			</if>
+			<if test="billingTime != null" >
+				#{billingTime},
+			</if>
+			<if test="feeWithoutTax != null" >
+				#{feeWithoutTax},
+			</if>
+			<if test="tax != null" >
+				#{tax},
+			</if>
+			<if test="fee != null" >
+				#{fee},
+			</if>
+			<if test="invoiceTypeName != null" >
+				#{invoiceTypeName},
+			</if>
+			<if test="invoiceTypeCode != null" >
+				#{invoiceTypeCode},
+			</if>
+			<if test="sellerName != null" >
+				#{sellerName},
+			</if>
+			<if test="sellerNumber != null" >
+				#{sellerNumber},
+			</if>
+			<if test="sellerAddressAndPhone != null" >
+				#{sellerAddressAndPhone},
+			</if>
+			<if test="sellerBankAccount != null" >
+				#{sellerBankAccount},
+			</if>
+			<if test="buyerName != null" >
+				#{buyerName},
+			</if>
+			<if test="buyerNumber != null" >
+				#{buyerNumber},
+			</if>
+			<if test="buyerAddressAndPhone != null" >
+				#{buyerAddressAndPhone},
+			</if>
+			<if test="buyerBankAccount != null" >
+				#{buyerBankAccount},
+			</if>
+			<if test="cashier != null" >
+				#{cashier},
+			</if>
+			<if test="maker != null" >
+				#{maker},
+			</if>
+			<if test="fuhr != null" >
+				#{fuhr},
+			</if>
+			<if test="remarks != null" >
+				#{remarks},
+			</if>
+			<if test="cardId != null" >
+				#{cardId},
+			</if>
+			<if test="beginTime != null" >
+				#{beginTime},
+			</if>
+			<if test="endTime != null" >
+				#{endTime},
+			</if>
+			<if test="openid != null" >
+				#{openid},
+			</if>
+			<if test="detail != null" >
+				#{detail},
+			</if>
+			<if test="pdfUrl != null" >
+				#{pdfUrl},
+			</if>
+			<if test="tripPdfUrl != null" >
+				#{tripPdfUrl},
+			</if>
+			<if test="reimburseStatus != null" >
+				#{reimburseStatus},
+			</if>
+			<if test="checkDate != null" >
+				#{checkDate},
+			</if>
+			<if test="checkNum != null" >
+				#{checkNum},
+			</if>
+			<if test="taxDiskCode != null" >
+				#{taxDiskCode},
+			</if>
+			<if test="voidMark != null" >
+				#{voidMark},
+			</if>
+			<if test="isBillmark != null" >
+				#{isBillmark},
+			</if>
+			<if test="yanpbs != null" >
+				#{yanpbs},
+			</if>
+			<if test="yanpztmc != null" >
+				#{yanpztmc},
+			</if>
+			<if test="yanpzt != null" >
+				#{yanpzt},
+			</if>
+			<if test="validState != null" >
+				#{validState},
+			</if>
+			<if test="validSource != null" >
+				#{validSource},
+			</if>
+			<if test="rawDataWeixin != null" >
+				#{rawDataWeixin},
+			</if>
+			<if test="rawDataGaopeng != null" >
+				#{rawDataGaopeng},
+			</if>
+			<if test="invoiceSource != null" >
+				#{invoiceSource},
+			</if>
+			<if test="fileName != null" >
+				#{fileName},
+			</if>
+			<if test="createdDt != null" >
+				#{createdDt},
+			</if>
+			<if test="createdUserId != null" >
+				#{createdUserId},
+			</if>
+		</trim>
+	</insert>
+
+	<update id="update" parameterType="pd">
+		update invoice t
+		<set>
+			<if test="billingNo != null" >
+				t.BILLING_NO = #{billingNo},
+			</if>
+			<if test="billingCode != null" >
+				t.BILLING_CODE = #{billingCode},
+			</if>
+			<if test="checkCode != null" >
+				t.CHECK_CODE = #{checkCode},
+			</if>
+			<if test="billingTime != null" >
+				t.BILLING_TIME = #{billingTime},
+			</if>
+			<if test="feeWithoutTax != null" >
+				t.FEE_WITHOUT_TAX = #{feeWithoutTax},
+			</if>
+			<if test="tax != null" >
+				t.TAX = #{tax},
+			</if>
+			<if test="fee != null" >
+				t.FEE = #{fee},
+			</if>
+			<if test="invoiceTypeName != null" >
+				t.INVOICE_TYPE_NAME = #{invoiceTypeName},
+			</if>
+			<if test="invoiceTypeCode != null" >
+				t.INVOICE_TYPE_CODE = #{invoiceTypeCode},
+			</if>
+			<if test="sellerName != null" >
+				t.SELLER_NAME = #{sellerName},
+			</if>
+			<if test="sellerNumber != null" >
+				t.SELLER_NUMBER = #{sellerNumber},
+			</if>
+			<if test="sellerAddressAndPhone != null" >
+				t.SELLER_ADDRESS_AND_PHONE = #{sellerAddressAndPhone},
+			</if>
+			<if test="sellerBankAccount != null" >
+				t.SELLER_BANK_ACCOUNT = #{sellerBankAccount},
+			</if>
+			<if test="buyerName != null" >
+				t.BUYER_NAME = #{buyerName},
+			</if>
+			<if test="buyerNumber != null" >
+				t.BUYER_NUMBER = #{buyerNumber},
+			</if>
+			<if test="buyerAddressAndPhone != null" >
+				t.BUYER_ADDRESS_AND_PHONE = #{buyerAddressAndPhone},
+			</if>
+			<if test="buyerBankAccount != null" >
+				t.BUYER_BANK_ACCOUNT = #{buyerBankAccount},
+			</if>
+			<if test="cashier != null" >
+				t.CASHIER = #{cashier},
+			</if>
+			<if test="maker != null" >
+				t.MAKER = #{maker},
+			</if>
+			<if test="fuhr != null" >
+				t.FUHR = #{fuhr},
+			</if>
+			<if test="remarks != null" >
+				t.REMARKS = #{remarks},
+			</if>
+			<if test="cardId != null" >
+				t.CARD_ID = #{cardId},
+			</if>
+			<if test="beginTime != null" >
+				t.BEGIN_TIME = #{beginTime},
+			</if>
+			<if test="endTime != null" >
+				t.END_TIME = #{endTime},
+			</if>
+			<if test="openid != null" >
+				t.OPENID = #{openid},
+			</if>
+			<if test="detail != null" >
+				t.DETAIL = #{detail},
+			</if>
+			<if test="pdfUrl != null" >
+				t.PDF_URL = #{pdfUrl},
+			</if>
+			<if test="tripPdfUrl != null" >
+				t.TRIP_PDF_URL = #{tripPdfUrl},
+			</if>
+			<if test="reimburseStatus != null" >
+				t.REIMBURSE_STATUS = #{reimburseStatus},
+			</if>
+			<if test="checkDate != null" >
+				t.CHECK_DATE = #{checkDate},
+			</if>
+			<if test="checkNum != null" >
+				t.CHECK_NUM = #{checkNum},
+			</if>
+			<if test="taxDiskCode != null" >
+				t.TAX_DISK_CODE = #{taxDiskCode},
+			</if>
+			<if test="voidMark != null" >
+				t.VOID_MARK = #{voidMark},
+			</if>
+			<if test="isBillmark != null" >
+				t.IS_BILLMARK = #{isBillmark},
+			</if>
+			<if test="yanpbs != null" >
+				t.YANPBS = #{yanpbs},
+			</if>
+			<if test="yanpztmc != null" >
+				t.YANPZTMC = #{yanpztmc},
+			</if>
+			<if test="yanpzt != null" >
+				t.YANPZT = #{yanpzt},
+			</if>
+			<if test="validState != null" >
+				t.VALID_STATE = #{validState},
+			</if>
+			<if test="validSource != null" >
+				t.VALID_SOURCE = #{validSource},
+			</if>
+			<if test="rawDataWeixin != null" >
+				t.RAW_DATA_WEIXIN = #{rawDataWeixin},
+			</if>
+			<if test="rawDataGaopeng != null" >
+				t.RAW_DATA_GAOPENG = #{rawDataGaopeng},
+			</if>
+			<if test="invoiceSource != null" >
+				t.INVOICE_SOURCE = #{invoiceSource},
+			</if>
+			<if test="fileName != null" >
+				t.FILE_NAME = #{fileName},
+			</if>
+			<if test="updatedDt != null" >
+				t.UPDATED_DT = #{updatedDt},
+			</if>
+			<if test="updatedUserId != null" >
+				t.UPDATED_USER_ID = #{updatedUserId},
+			</if>
+		</set>
+		where t.ID = #{invoiceId}
+	</update>
+
+	<delete id="delete" parameterType="pd">
+		delete t.* from invoice t
+		where t.ID = #{invoiceId}
+	</delete>
+	
+	<select id="listInvoiceInfo" parameterType="pd" resultType="pd">
+		select
+			t.BILLING_NO,
+			t.BILLING_CODE,
+			t.BUYER_NAME,
+			t.INVOICE_SOURCE,
+			t.BILLING_TIME,
+			t.VALID_STATE,
+			(select sd.DIC_VALUE from sys_dictionary sd where sd.DIC_KEY = t.VALID_STATE) as VALID_STATE_VALUE
+		from invoice t
+		<where>
+			<if test="billingNo != null">
+				and t.BILLING_NO like CONCAT('%',#{billingNo},'%')
+			</if>
+			<if test="billingCode != null">
+				and t.BILLING_CODE like CONCAT('%',#{billingCode},'%')
+			</if>
+			<if test="buyerName != null">
+				and t.BUYER_NAME like CONCAT('%',#{buyerName},'%')
+			</if>
+			<if test="billingStartTime != null">
+				and t.BILLING_TIME <![CDATA[ >= ]]> #{billingStartTime}
+			</if>
+			<if test="billingEndTime != null">
+				and t.BILLING_TIME <![CDATA[ <= ]]> #{billingEndTime}
+			</if>
+			<if test="validState != null">
+				and t.VALID_STATE = #{validState}
+			</if>
+		</where>
+	</select>
+	
+</mapper>

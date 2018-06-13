@@ -1,0 +1,30 @@
+package com.ztessc.einvoice;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import com.ztessc.einvoice.util.HmacSHA1Util;
+import com.ztessc.einvoice.util.HttpClientUtil;
+
+public class Test {
+
+	public static void main(String[] args) {
+		String url = "http://localhost:8081/api/invoice/check";
+		
+		Map<String,String> data = new HashMap<String, String>();
+		data.put("billingCode", "91398776");
+		data.put("billingNo", "044001500111");
+		data.put("billingTime", "2018-01-11");
+		data.put("checkCode", "023492");
+		
+		Map<String,String> params = new HashMap<String, String>();
+		params.put("data", data.toString());
+		params.put("appId", "c6ebaffd99cd49a184dadad6e46ccb09");
+		params.put("sign", HmacSHA1Util.encrypt(data.toString()));
+		
+		String result = HttpClientUtil.post(url, params);
+		
+		System.out.println(result);
+		
+	}
+}

@@ -1,0 +1,405 @@
+package com.ztessc.einvoice.service;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
+import com.ztessc.einvoice.dao.DaoSupport;
+import com.ztessc.einvoice.exception.BizException;
+import com.ztessc.einvoice.util.Const;
+import com.ztessc.einvoice.util.DateUtil;
+import com.ztessc.einvoice.util.FileDownload;
+import com.ztessc.einvoice.util.FileUtil;
+import com.ztessc.einvoice.util.PageData;
+import com.ztessc.einvoice.util.ShiroUtil;
+import com.ztessc.einvoice.util.UuidUtil;
+
+/**
+ * 发票信息
+ * Copyright © 2018 zte. All rights reserved.
+ * @Description: TODO
+ * @Title: InvoiceService.java 
+ * @Prject: eInvoiceV1.0.0
+ * @Package: com.zte.pl.service 
+ * @ClassName: InvoiceService 
+ * @author: 徐益森   
+ * @date: 2018年4月19日 上午11:38:48 
+ * @version: V1.0.0
+ */
+@Service
+public class InvoiceService {
+
+	@Autowired
+	private DaoSupport daoSupport;
+	
+	/**
+	 * APP端获取个人发票列表
+	 * @author: 徐益森
+	 * @date: 2018年4月19日 上午11:39:31
+	 * @param {"invoiceSource":"","billingTime":"","userId":"","keyword":""}
+	 * @return List<PageData>
+	 */
+	public List<PageData> listInvoice(PageData pd) {
+		List<PageData> invoiceList = this.listByUser(pd);
+		if(invoiceList != null && invoiceList.size() > 0) {
+			for (PageData invoice : invoiceList) {
+				//根据发票id查询商品详情
+				List<PageData> invoiceDetailList = this.listDetailByInvoice(invoice);
+				invoice.put("invoiceDetailList", invoiceDetailList);
+				
+				if(StringUtils.isNotBlank(invoice.getString("fileName"))) {
+					invoice.put("fileName", FileUtil.getDownloadPath(Const.FILE_UPLOAD_DIR.get("1006"), invoice.getString("fileName")));
+				}
+			}
+		}
+		return invoiceList;
+	}
+	
+	/**
+	 * 获取个人发票列表
+	 * @param {"invoiceSource":"","billingTime":"","userId":"","keyword":""}
+	 */
+	public List<PageData> listByUser(PageData pd) {
+		return daoSupport.listForPageData("InvoiceMapper.listByUser", pd);
+	}
+	
+	/**
+	 * 根据发票id查询商品详情
+	 * @param {"id":"aaa"}
+	 */
+	public List<PageData> listDetailByInvoice(PageData pd) {
+		return daoSupport.listForPageData("InvoiceDetailMapper.listDetailByInvoice", pd);
+	}
+	
+	/**
+	 * 根据发票代码、发票号码、用户ID查询发票
+	 * @author: 徐益森
+	 * @date: 2018年4月19日 下午5:31:57
+	 * @param {"billingNo":"","billingCode":"","userId":""}
+	 * @return PageData
+	 */
+	public PageData findInvoice(PageData pd) {
+		return daoSupport.findForPageData("InvoiceMapper.findInvoice", pd);
+	}
+	
+	/**
+	 * 手工录入发票保存
+	 * @author: 徐益森
+	 * @date: 2018年4月19日 上午11:46:28
+	 * @param {"billingNo":"","billingCode":"","checkCode":"","billingTime":"","feeWithoutTax":""}
+	 * @return void
+	 */
+	@Transactional
+	public void save(PageData pd) {
+		if(StringUtils.isBlank(pd.getString("billingNo"))) {
+			throw new BizException("发票代码不能为空");
+		}
+		if(StringUtils.isBlank(pd.getString("billingCode"))) {
+			throw new BizException("发票号码不能为空");
+		}
+		if(StringUtils.isBlank(pd.getString("billingTime"))) {
+			throw new BizException("开票时间不能为空");
+		}
+		if(StringUtils.isBlank(pd.getString("checkCode"))) {
+			throw new BizException("校验码不能为空");
+		}
+		
+		//校验开票时间格式：yyyy-MM-dd
+		if(!pd.getString("billingTime").matches("\\d{4}-\\d{2}-\\d{2}")) {
+			throw new BizException("开票时间格式为yyyy-MM-dd");
+		}
+		
+		//验证发票是否存在，根据 发票代码+发票号码+用户ID进行判断
+		pd.put("userId", ShiroUtil.getCurrentUserId());
+		PageData invoice = this.findInvoice(pd);
+		if(invoice != null && invoice.size() > 0) {
+			throw new BizException("发票已存在");
+		}
+
+		pd.put("invoiceSource", Const.DIC_INVOICE_SOURCE_TYPE_HAND);
+		pd.put("validState", Const.DIC_VALID_STATE_TYPE_WYZ);
+		
+		pd.fillCreatedData();
+		daoSupport.save("InvoiceMapper.save", pd);
+	}
+
+	@Transactional
+	public PageData saveBatch(List<PageData> list) {
+		PageData result = new PageData();
+		//上传成功的
+		List<PageData> success = new ArrayList<PageData>();
+		//上传失败的
+		List<PageData> failure = new ArrayList<PageData>();
+		
+		//过滤list中重复数据
+		Map<String, PageData> maps = new HashMap<String, PageData>();
+		for (PageData data : list) {
+			if(!maps.containsKey(data.getString("billingNo")+"-"+data.getString("billingNo"))) {
+				maps.put(data.getString("billingNo")+"-"+data.getString("billingNo"), data);
+			}else {
+				data.put("failureMsg", "重复获取");
+				failure.add(data);
+			}
+		}
+		
+		Collection<PageData> collection = maps.values();
+		for (PageData data : collection) {
+			data.put("invoiceSource", Const.DIC_INVOICE_SOURCE_TYPE_PDF);
+			data.put("validState", Const.DIC_VALID_STATE_TYPE_WYZ);
+			
+			//验证发票是否存在，根据 发票代码+发票号码+用户ID进行判断
+			data.put("userId", ShiroUtil.getCurrentUserId());
+			PageData invoice = this.findInvoice(data);
+			if(invoice != null && invoice.size() > 0) {
+				data.put("failureMsg", "重复获取");
+				failure.add(data);
+			}else {
+				data.fillCreatedData();
+				success.add(data);
+			}
+		}
+		daoSupport.batchInsert("InvoiceMapper.save", success);
+		
+		result.put("success", success);
+		result.put("failure", failure);
+		return result;
+	}
+	
+	/**
+	 * 解析微信返回的发票信息
+	 * @author: 徐益森
+	 * @date: 2018年4月19日 下午10:24:59
+	 * @param invoiceStr
+	 * @return invoice,invoiceDetail
+	 */
+	public PageData parseInvoiceFromWeixin(String invoiceStr) {
+		Map<String,Object> data = JSON.parseObject(invoiceStr);
+		JSONObject userInfo = (JSONObject) data.get("user_info");
+		PageData invoice = new PageData();
+		invoice.put("cardId", data.get("card_id"));
+		invoice.put("beginTime", data.get("begin_time"));
+		invoice.put("endTime", data.get("end_time"));
+		invoice.put("openid", data.get("openid"));
+		invoice.put("invoiceTypeName", data.get("type"));
+		invoice.put("invoiceTypeCode", data.get("type"));
+		invoice.put("sellerName", data.get("payee"));
+		invoice.put("detail", userInfo.get("detail"));
+		invoice.put("fee", String.format("%.2f", Double.parseDouble(userInfo.getString("fee"))/100d));
+		invoice.put("buyerName", userInfo.getString("title"));
+		invoice.put("billingTime", DateUtil.getDate(new Date(Long.parseLong(userInfo.getString("billing_time"))*1000L)));
+		invoice.put("billingNo", userInfo.getString("billing_no"));
+		invoice.put("billingCode", userInfo.getString("billing_code"));
+		invoice.put("feeWithoutTax", String.format("%.2f", Double.parseDouble(userInfo.getString("fee_without_tax"))/100d));
+		invoice.put("tax", String.format("%.2f", Double.parseDouble(userInfo.getString("tax"))/100d));
+		invoice.put("pdfUrl", userInfo.getString("pdf_url"));
+		invoice.put("tripPdfUrl", userInfo.getString("trip_pdf_url"));
+		invoice.put("reimburseStatus", userInfo.getString("reimburse_status"));
+		invoice.put("checkCode", userInfo.getString("check_code"));
+		invoice.put("buyerNumber", userInfo.getString("buyer_number"));
+		invoice.put("buyerAddressAndPhone", userInfo.getString("buyer_address_and_phone"));
+		invoice.put("buyerBankAccount", userInfo.getString("buyer_bank_account"));
+		invoice.put("sellerNumber", userInfo.getString("seller_number"));
+		invoice.put("sellerAddressAndPhone", userInfo.getString("seller_address_and_phone"));
+		invoice.put("sellerBankAccount", userInfo.getString("seller_bank_account"));
+		invoice.put("remarks", userInfo.getString("remarks"));
+		invoice.put("cashier", userInfo.getString("cashier"));
+		invoice.put("maker", userInfo.getString("maker"));
+		
+		invoice.put("invoiceSource", Const.DIC_INVOICE_SOURCE_TYPE_WEIXIN);
+		invoice.put("validState", Const.DIC_VALID_STATE_TYPE_WYZ);
+		invoice.put("rawDataWeixin", invoiceStr);
+		
+		//如果包含商品详情
+		List<PageData> invoiceDetail = new ArrayList<PageData>();
+		if(userInfo.containsKey("info")) {
+			JSONArray info = (JSONArray) userInfo.get("info");
+			for(int i=0; i<info.size(); i++) {
+				JSONObject detail = info.getJSONObject(i);
+				PageData detailPd = new PageData();
+				detailPd.put("goodserviceName", detail.get("name"));
+				detailPd.put("number", detail.get("num"));
+				detailPd.put("unit", detail.get("unit"));
+				detailPd.put("price", String.format("%.2f", Double.parseDouble(detail.getString("price"))/100d));
+				
+				invoiceDetail.add(detailPd);
+			}
+		}
+		
+		invoice.put("invoiceDetail", invoiceDetail);
+		
+		return invoice;
+	}
+	
+	/**
+	 * 解析微信返回的发票信息
+	 * @author: 徐益森
+	 * @date: 2018年4月19日 下午8:44:53
+	 * @param invoiceInfo
+	 * @return PageData
+	 */
+	public List<PageData> parseInvoiceFromWeixin(List<String> invoiceList) {
+		List<PageData> list = new ArrayList<PageData>();
+		if(invoiceList != null && invoiceList.size() > 0) {
+			for (String invoiceStr : invoiceList) {
+				PageData invoiceAllInfo = this.parseInvoiceFromWeixin(invoiceStr);
+				list.add(invoiceAllInfo);
+			}
+		}
+		return list;
+	}
+	
+	/**
+	 * 获取微信卡包返回数据
+	 * @author: 徐益森
+	 * @date: 2018年5月2日 下午3:35:15
+	 * @param {}
+	 * @return PageData
+	 */
+	@SuppressWarnings("unchecked")
+	private PageData parseResult(PageData invoice) {
+		PageData data = new PageData();
+		if(invoice != null && invoice.size() > 0) {
+			data.put("sellerName", invoice.getString("sellerName"));
+			data.put("buyerName", invoice.getString("buyerName"));
+			data.put("billingTime", invoice.getString("billingTime"));
+			data.put("feeWithoutTax", invoice.getString("feeWithoutTax"));
+			List<PageData> invoiceDetail = (List<PageData>) invoice.get("invoiceDetail");
+			if(invoiceDetail != null && invoiceDetail.size() > 0) {
+				data.put("goodserviceName", invoiceDetail.get(0).getString("goodserviceName"));
+			}
+		}
+		return data;
+	}
+	
+	@SuppressWarnings("unchecked")
+	@Transactional
+	public PageData saveInvoiceFromWeixin(List<String> invoiceList) {
+		PageData result = new PageData();
+		//上传成功的
+		List<PageData> success = new ArrayList<PageData>();
+		//上传失败的
+		List<PageData> failure = new ArrayList<PageData>();
+		
+		//解析微信返回的发票信息
+		List<PageData> list = parseInvoiceFromWeixin(invoiceList);
+		if(list != null && list.size() > 0) {
+			for (PageData data : list) {
+				PageData invoice = (PageData) data.get("invoice");
+				List<PageData> invoiceDetail = (List<PageData>) invoice.get("invoiceDetail");
+				//验证发票是否存在，根据 发票代码+发票号码+用户ID进行判断
+				invoice.put("userId", ShiroUtil.getCurrentUserId());
+				PageData dbData = this.findInvoice(invoice);
+				if(dbData != null && dbData.size() > 0) {
+					PageData resultData = this.parseResult(invoice);
+					resultData.put("failureMsg", "重复获取");
+					failure.add(resultData);
+					continue;
+				}
+				
+				//下载微信pdf发票文件到本地
+				String fileName = UuidUtil.getUUID()+".pdf";
+				FileDownload.fileDownload(invoice.getString("pdfUrl"), FileUtil.getUploadPath(Const.FILE_UPLOAD_DIR.get("1006")) + fileName);
+				//保存发票
+				invoice.put("fileName", fileName);
+				invoice.fillCreatedData();
+				daoSupport.save("InvoiceMapper.save", invoice);
+				
+				//保存发票商品详细信息
+				if(invoiceDetail != null && invoiceDetail.size() > 0) {
+					for (PageData detail : invoiceDetail) {
+						detail.fillCreatedData();
+						detail.put("invoiceId", invoice.getString("id"));
+					}
+					daoSupport.batchInsert("InvoiceDetailMapper.save", invoiceDetail);
+				}
+				
+				PageData resultData = this.parseResult(invoice);
+				success.add(resultData);
+			}
+		}
+		
+		result.put("success", success);
+		result.put("failure", failure);
+		
+		return result;
+	}
+	
+	public List<PageData> listInvoiceInfo(PageData pd) {
+		
+		String billingEndTime = pd.getString("billingEndTime");
+		if( StringUtils.isNotBlank(billingEndTime)){
+			Date data = null;
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+			try {
+				 data = sdf.parse(billingEndTime);
+			} catch (ParseException e) {
+				e.printStackTrace();
+			}
+			Calendar c = Calendar.getInstance();
+			c.setTime(data);
+			c.add(Calendar.DAY_OF_MONTH, 1);
+			
+			Date time = c.getTime();
+			pd.put("billingEndTime",time);
+		}
+		
+		return daoSupport.listForPageData("InvoiceMapper.listInvoiceInfo", pd);
+	}
+
+	/**
+	 * 根据发票ID获取发票
+	 * @author: 徐益森
+	 * @date: 2018年4月26日 下午2:49:31
+	 * @param {"invoiceId":"aaa"}
+	 * @return PageData
+	 */
+	public PageData findById(PageData params) {
+		return daoSupport.findForPageData("InvoiceMapper.findById", params);
+	}
+	
+	/**
+	 * 将发票发送给同事
+	 * @author: 徐益森
+	 * @date: 2018年4月26日 下午2:37:44
+	 * @param {"invoiceId":"aaa","userId":"bbb"}
+	 * @return void
+	 */
+	public void sendInvoiceToUser(PageData params) {
+		if(StringUtils.isBlank(params.getString("invoiceId"))) {
+			throw new BizException("发票不能为空");
+		}
+		
+		if(StringUtils.isBlank(params.getString("userId"))) {
+			throw new BizException("请选择要发送的同事");
+		}
+		
+		PageData data = this.findById(params);
+		data.fillCreatedData();
+		data.put("userId", params.getString("userId"));
+		daoSupport.save("InvoiceMapper.save", data);
+	}
+	
+	/**
+	 * 删除发票信息
+	 * @author: TQM
+	 * @date: 2018年5月2日11:35:27
+	 * @param {"id":"aaa"}
+	 */
+	public void delete(PageData params) {
+		daoSupport.delete("InvoiceMapper.delete", params);
+	}
+}

@@ -1,0 +1,133 @@
+package com.ztessc.einvoice.controller.app;
+
+import org.slf4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.ztessc.einvoice.controller.BaseController;
+import com.ztessc.einvoice.service.AppBootConfigService;
+import com.ztessc.einvoice.service.AppButtonConfigService;
+import com.ztessc.einvoice.service.AppLogoConfigService;
+import com.ztessc.einvoice.service.AppMenuConfigService;
+import com.ztessc.einvoice.service.AppService;
+import com.ztessc.einvoice.service.AppSlideshowConfigService;
+import com.ztessc.einvoice.service.UserService;
+import com.ztessc.einvoice.util.Const;
+import com.ztessc.einvoice.util.Log;
+import com.ztessc.einvoice.util.MessageUtil;
+import com.ztessc.einvoice.util.PageData;
+import com.ztessc.einvoice.util.ShiroUtil;
+import com.ztessc.einvoice.util.TokenUtil;
+
+/**
+ * 
+ * Copyright © 2018 zte. All rights reserved.
+ * @Description: TODO
+ * @Title: AppController.java 
+ * @Prject: pl
+ * @Package: com.zte.pl.controller 
+ * @ClassName: AppController 
+ * @author: 徐益森   
+ * @date: 2018年4月16日 下午3:55:11 
+ * @version: V1.0.0
+ */
+@RequestMapping(value = "/app")
+@RestController
+public class AppController extends BaseController {
+
+	private final Logger log = Log.get();
+	
+	@Autowired
+	private AppBootConfigService appBootConfigService;
+	@Autowired
+	private AppSlideshowConfigService appSlideshowConfigService;
+	@Autowired
+	private AppLogoConfigService appcConfigService;
+	@Autowired
+	private AppButtonConfigService appButtonConfigService;
+	@Autowired
+	private AppMenuConfigService appMenuConfigService;
+	@Autowired
+	private UserService userService;
+	@Autowired
+	private AppService appService;
+	
+	@ResponseBody
+	@RequestMapping(value="/init/home")
+	public PageData index() {
+		//获取app启动页
+		PageData bootConfig = appBootConfigService.findBootConfig(null);
+//		//获取app轮播图
+//		List<PageData> listSlideshows = appSlideshowConfigService.listSlideshows();
+//		//获取app logo
+//		PageData logoConfig = appcConfigService.findLogoConfig(null);
+//		//获取app栏目
+//		List<PageData> listButtons = appButtonConfigService.listButtons();
+//		//获取app菜单
+//		List<PageData> listMenus = appMenuConfigService.listMenus();
+		
+		PageData result = new PageData();
+		result.put("bootConfig", bootConfig);
+//		result.put("listSlideshows", listSlideshows);
+//		result.put("logoConfig", logoConfig);
+//		result.put("listButtons", listButtons);
+//		result.put("listMenus", listMenus);
+		return MessageUtil.getSuccessMessage(result);
+	}
+	
+	/**
+     * 登录方法
+     * @param {"username":"admin","password":"888888"}
+     * @return
+     */
+    @RequestMapping(value = "/init/login")
+    @ResponseBody
+    public PageData login() {
+    	PageData params = this.getPageData();
+//        UsernamePasswordToken token = new UsernamePasswordToken(params.getString("username"), params.getString("password"));
+
+        PageData result = new PageData();
+        try {
+//            ShiroUtil.login(token);
+        	PageData user = userService.findBy(params);
+        	if(user == null) {
+        		return MessageUtil.getErrorMessage(result, "用户名或密码错误", Const.ERROR_CODE_USERNAME_PASSWORD_ERROR);
+        	}
+        	
+        	String token = TokenUtil.createToken(user);
+        	
+            result.put("user", user);
+            result.put("token", token);
+            result = MessageUtil.getSuccessMessage(result, "登录成功");
+        } catch (Exception e) {
+        	result = MessageUtil.getErrorMessage(result, "用户名或密码错误", Const.ERROR_CODE_USERNAME_PASSWORD_ERROR);
+        	log.error("登录失败", e);
+        }
+        return result;
+    }
+    
+    /**
+	 * 用户注销
+	 */
+	@RequestMapping(value = "/init/logout")
+	public PageData logout() {
+		ShiroUtil.logout();
+		return MessageUtil.getSuccessMessage("注销成功");
+	}
+	
+	/**
+	 * app版本检查，判断某个版本是否要强制更新
+	 * @author: 徐益森
+	 * @date: 2018年5月10日 上午10:06:12
+	 * @param {"version":"1.0.0","platform":"android/ios"}
+	 * @return PageData
+	 */
+	@RequestMapping(value = "/init/versionCheck")
+	public PageData versionCheck() {
+		PageData params = this.getPageData();
+		PageData result = appService.versionCheck(params);
+		return MessageUtil.getSuccessMessage(result);
+	}
+}

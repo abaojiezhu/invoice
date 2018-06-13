@@ -1,0 +1,69 @@
+package com.ztessc.einvoice.weixin;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
+import org.springframework.stereotype.Component;
+
+@Component
+public class WeixinWork {
+
+	/**access_token*/
+	public static String TOKEN_URL = "https://qyapi.weixin.qq.com/cgi-bin/gettoken?corpid={0}&corpsecret={1}";
+	/**jsapi ticket*/
+	public static String TICKET_JS_URL = "https://qyapi.weixin.qq.com/cgi-bin/get_jsapi_ticket?access_token={0}";
+	/**电子发票ticket*/
+	public static String TICKET_URL = "https://qyapi.weixin.qq.com/cgi-bin/ticket/get?access_token=ACCESS_TOKEN&type=wx_card";
+	
+	@Autowired
+	private Environment env;
+	
+	private static String accessToken;
+	
+	private static String apiTicket;
+	
+	private static String jsapiTicket;
+	
+	public void flush() {
+		getAccessToken();
+		getJsApiTicket();
+		getApiTicket();
+	}
+	
+	public String getAccessToken() {
+		if(StringUtils.isBlank(accessToken)) {
+			accessToken = WeixinUtil.refreshAccessToken(TOKEN_URL, getCorpId(), getSecret());
+		}
+		return accessToken;
+	}
+	
+	public String getJsApiTicket() {
+		if(StringUtils.isBlank(jsapiTicket)) {
+			jsapiTicket = WeixinUtil.refreshApiTicket(TICKET_JS_URL, getAccessToken());
+		}
+		return jsapiTicket;
+	}
+	
+	public String getApiTicket() {
+		if(StringUtils.isBlank(apiTicket)) {
+			apiTicket = WeixinUtil.refreshApiTicket(TICKET_URL, getAccessToken());
+		}
+		return apiTicket;
+	}
+	
+	public String getAppId() {
+		return env.getProperty("weixin.work.appid");
+	}
+	
+	public String getCorpId() {
+		return env.getProperty("weixin.work.corpid");
+	}
+	
+	public String getSecret() {
+		return env.getProperty("weixin.work.secret");
+	}
+	
+	public String getUrl() {
+		return env.getProperty("weixin.work.url");
+	}
+}

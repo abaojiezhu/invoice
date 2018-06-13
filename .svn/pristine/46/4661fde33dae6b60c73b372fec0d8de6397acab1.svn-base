@@ -1,0 +1,31 @@
+package com.ztessc.einvoice.exception;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.springframework.boot.autoconfigure.web.ErrorController;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.ztessc.einvoice.util.Const;
+import com.ztessc.einvoice.util.MessageUtil;
+import com.ztessc.einvoice.util.PageData;
+
+@RestController
+public class HttpErrorHandler implements ErrorController {
+
+    private final static String ERROR_PATH = "/error";
+
+    @Override
+    public String getErrorPath() {
+        return ERROR_PATH;
+    }
+    
+    @RequestMapping(value = ERROR_PATH)
+    @ResponseBody
+    public PageData error(HttpServletResponse response, HttpServletRequest request) {
+        return MessageUtil.getErrorMessage("你访问的资源不存在",Const.ERROR_CODE_PAGE_NOT_FOUND);
+    }
+    
+}

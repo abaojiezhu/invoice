@@ -1,0 +1,122 @@
+package com.ztessc.einvoice.interceptor;
+
+import java.util.Enumeration;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
+
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.interfaces.DecodedJWT;
+import com.ztessc.einvoice.exception.BizException;
+import com.ztessc.einvoice.util.Const;
+import com.ztessc.einvoice.util.DateUtil;
+import com.ztessc.einvoice.util.JWTUtil;
+import com.ztessc.einvoice.util.ShiroUtil;
+
+public class AppTokenInterceptor extends HandlerInterceptorAdapter {
+
+	@Override
+	public boolean preHandle(HttpServletRequest request,
+			HttpServletResponse response, Object handler) throws Exception {
+
+		String token = request.getHeader("authorization");
+//		String cookie = request.getHeader("Cookie");
+//		String token = cookie.split("=")[1].trim();
+		String userName = request.getHeader("USERNAME");
+		Enumeration<String> headerNames = request.getHeaderNames();
+System.out.println("token--------" + token);
+
+		//token为空，非法请求
+		if(StringUtils.isBlank(token)){
+			throw new BizException("非法请求",Const.ERROR_CODE_UNLOGIN);
+		}
+		
+		//校验jwt token
+		int result = JWTUtil.verify(token, JWTUtil.getSecret(ShiroUtil.getCurrentUserId()));
+		if(result == 2) {
+			
+			throw new BizException("token验证失败",Const.ERROR_CODE_UNLOGIN);
+			
+		}else if(result == 1) {
+			DecodedJWT jwt = JWT.decode(token);
+			
+			//过期时间
+			long expTime = jwt.getExpiresAt().getTime();
+			//免登录时间
+			long rememberTime = jwt.getClaim("rememberTime").asDate().getTime();
+			//当前时间
+			long currTime = System.currentTimeMillis();
+			//如果当前时间 > 过期时间 && <= 免登录时间，则重新生成jwt
+			if(currTime > expTime && currTime <= rememberTime) {
+				String newToken = JWTUtil.refreshToken(token);
+				response.setHeader("token", newToken);
+				
+				ShiroUtil.setCurrentUserData(JWTUtil.getUserInfo(newToken));
+			}else {
+				
+				throw new BizException("帐号已失效，请重新登录",Const.ERROR_CODE_UNLOGIN);
+			}
+		}
+		
+		return super.preHandle(request, response, handler);
+		
+		
+		
+//		PageData userData = TokenUtil.getToken(token);
+//		if(userData == null) {
+//			throw new BizException("帐号已失效，请重新登录",Const.ERROR_CODE_UNLOGIN);
+//		}
+//		ShiroUtil.setCurrentUserData(userData);
+//		response.setHeader("token", "111");
+//		
+//		CustomeizedRequest myRequest = new CustomeizedRequest(request);
+//		myRequest.putHeader("token", "111");
+//		
+//		return super.preHandle(myRequest, response, handler);
+	}
+	
+//	private class CustomeizedRequest extends HttpServletRequestWrapper {
+//
+//		private final Map<String, String> customHeaders;
+//		
+//		public CustomeizedRequest(HttpServletRequest request) {
+//			super(request);
+//			this.customHeaders = new HashMap<>();
+//		}
+//		
+//		public void putHeader(String name, String value){
+//            this.customHeaders.put(name, value);
+//        }
+//		
+//		public String getHeader(String name) {
+//            // check the custom headers first
+//            String headerValue = customHeaders.get(name);
+//
+//            if (headerValue != null){
+//                return headerValue;
+//            }
+//            // else return from into the original wrapped object
+//            return ((HttpServletRequest) getRequest()).getHeader(name);
+//        }
+//		
+//		public Enumeration<String> getHeaderNames() {
+//            // create a set of the custom header names
+//            Set<String> set = new HashSet<>(customHeaders.keySet());
+//
+//            // now add the headers from the wrapped request object
+//            Enumeration<String> e = ((HttpServletRequest) getRequest()).getHeaderNames();
+//            while (e.hasMoreElements()) {
+//                // add the names of the request headers into the list
+//                String n = e.nextElement();
+//                set.add(n);
+//            }
+//
+//            // create an enumeration from the set and return
+//            return Collections.enumeration(set);
+//        }
+//		
+//	}
+}

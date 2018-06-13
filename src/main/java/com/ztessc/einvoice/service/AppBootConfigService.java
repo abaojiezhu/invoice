@@ -1,0 +1,147 @@
+package com.ztessc.einvoice.service;
+
+import java.io.File;
+import java.util.List;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.ztessc.einvoice.dao.DaoSupport;
+import com.ztessc.einvoice.exception.BizException;
+import com.ztessc.einvoice.util.Const;
+import com.ztessc.einvoice.util.FileUtil;
+import com.ztessc.einvoice.util.PageData;
+
+/**
+ * APP启动页配置
+ * Copyright © 2018 zte. All rights reserved.
+ * @Description: TODO
+ * @Title: AppBootConfigService.java 
+ * @Prject: pl
+ * @Package: com.zte.pl.service 
+ * @ClassName: AppBootConfigService 
+ * @author: 徐益森   
+ * @date: 2018年4月10日 上午10:18:21 
+ * @version: V1.0.0
+ */
+@Service
+public class AppBootConfigService {
+
+	@Autowired
+	private DaoSupport daoSupport;
+	
+	/**
+	 * 获取所有数据
+	 * @author: 徐益森
+	 * @date: 2018年4月11日 下午6:16:56
+	 * @return List<PageData>
+	 */
+	public List<PageData> listBootConfigs() {
+		return daoSupport.listForPageData("AppBootConfigMapper.listBootConfigs", null);
+	}
+	
+	/**
+	 * 获取app启动页
+	 * @author: 徐益森
+	 * @date: 2018年4月10日 下午3:10:54
+	 * @return PageData
+	 */
+	public PageData findBootConfig(PageData pd) {
+		List<PageData> list = daoSupport.listForPageData("AppBootConfigMapper.findBootConfig", pd);
+		if(list != null && list.size() > 0) {
+			return list.get(0);
+		}
+		return null;
+	}
+	
+	/**
+	 * 新增
+	 * @author: 徐益森
+	 * @date: 2018年4月10日 上午10:16:28
+	 * @param {"imgName":"","imgDesc":"","fileName":"","realName":"","enabled":""}
+	 * @return PageData
+	 */
+	@Transactional
+	public void save(PageData pd) {
+		//验证名称是否重复
+		PageData data = this.findByName(pd);
+		if(data != null && data.size() > 0) {
+			throw new BizException("图片名称不能重复");
+		}
+		//验证是否已存在启用状态，app启动页只能有一个
+		PageData config = this.findBootConfig(null);
+		if(config != null && config.size() > 0) {
+			throw new BizException("只能有一条记录为启用状态");
+		}
+		pd.fillCreatedData();
+		daoSupport.save("AppBootConfigMapper.save", pd);
+	}
+	
+	/**
+	 * 修改
+	 * @author: 徐益森
+	 * @date: 2018年4月10日 下午2:38:01
+	 * @param {"id":"aaa","imgName":"","imgDesc":"","fileName":"","realName":"","enabled":""}
+	 * @return void
+	 */
+	@Transactional
+	public void update(PageData pd) {
+		//验证名称是否重复
+		PageData data = this.findByName(pd);
+		if(data != null && data.size() > 0) {
+			throw new BizException("图片名称不能重复");
+		}
+		//验证是否已存在启用状态，app启动页只能有一个
+		PageData config = this.findBootConfig(pd);
+		if(config != null && config.size() > 0) {
+			throw new BizException("只能有一条记录为启用状态");
+		}
+		pd.fillUpdatedData();
+		daoSupport.update("AppBootConfigMapper.update", pd);
+	}
+	
+	/**
+	 * 删除
+	 * @author: 徐益森
+	 * @date: 2018年4月10日 下午3:02:49
+	 * @param {"id":"aaa"}
+	 * @return void
+	 */
+	@Transactional
+	public void delete(PageData pd) {
+		PageData data = this.findById(pd);
+		if(data == null) {
+			throw new BizException("数据不存在或已删除");
+		}
+		if(Const.DIC_ENABLED_TYPE_QY.equals(data.getString("enabled"))) {
+			throw new BizException("不能删除已启用的记录");
+		}
+		//删除文件
+		if(StringUtils.isNotBlank(data.getString("fileName"))) {
+			String fileName = data.getString("fileName").substring(data.getString("fileName").lastIndexOf("/") + 1);
+			String path = FileUtil.getUploadPath("boot") + fileName;
+			File file = new File(path);
+			if(file.exists()) {
+				file.delete();
+			}
+		}
+		daoSupport.delete("AppBootConfigMapper.delete", pd);
+	}
+	
+	/**
+	 * @param {"id":"aaa"}
+	 */
+	private PageData findById(PageData pd) {
+		return daoSupport.findForPageData("AppBootConfigMapper.findById", pd);
+	}
+	
+	/**
+	 * @param {"imgName":"aaa"}
+	 */
+	private PageData findByName(PageData pd) {
+		return daoSupport.findForPageData("AppBootConfigMapper.findByName", pd);
+	}
+
+}

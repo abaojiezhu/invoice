@@ -1,0 +1,95 @@
+package com.ztessc.einvoice.controller.app;
+
+import java.util.Date;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.ztessc.einvoice.controller.BaseController;
+import com.ztessc.einvoice.service.InvoiceService;
+import com.ztessc.einvoice.util.MessageUtil;
+import com.ztessc.einvoice.util.PageData;
+import com.ztessc.einvoice.util.SHA1Util;
+import com.ztessc.einvoice.util.UuidUtil;
+import com.ztessc.einvoice.util.WxCardSign;
+import com.ztessc.einvoice.weixin.WeixinWork;
+
+/**
+ * 企业微信开发
+ * Copyright © 2018 zte. All rights reserved.
+ * @Description: TODO
+ * @Title: WeixinWorkController.java 
+ * @Prject: ztessc-einvoice
+ * @Package: com.ztessc.einvoice.controller.app 
+ * @ClassName: WeixinWorkController 
+ * @author: 徐益森   
+ * @date: 2018年6月11日 下午4:04:23 
+ * @version: V1.0.0
+ */
+@RequestMapping(value = "/app")
+@RestController
+public class WeixinWorkController extends BaseController {
+
+	@Autowired
+	private InvoiceService invoiceService;
+	
+	@Autowired
+	private WeixinWork weixinWork;
+	
+	/**
+	 * 获取JSAPI签名
+	 * @author: 徐益森
+	 * @date: 2018年6月12日 上午9:31:43
+	 * @param {}
+	 * @return PageData
+	 */
+    @PostMapping(value = "/v1/weixin/work/getJsSignature")
+    public PageData getJsSignature() {
+		PageData result = new PageData();
+        
+        String ticket = weixinWork.getJsApiTicket();
+        result.put("jsapi_ticket", ticket);
+        result.put("noncestr", UuidUtil.getUUID());
+        result.put("timestamp", System.currentTimeMillis());
+        result.put("url", weixinWork.getUrl());
+        result.put("signature", this.getSignSha1(result));
+        result.put("corpid", weixinWork.getCorpId());
+		return MessageUtil.getSuccessMessage(result);
+    }
+    
+    /**
+     * 获取电子发票签名
+     * @author: 徐益森
+     * @date: 2018年6月12日 上午9:32:07
+     * @param {}
+     * @return PageData
+     */
+    @PostMapping(value = "/v1/weixin/work/getSignature")
+    public PageData getSignature() {
+    	PageData result = new PageData();
+		
+		WxCardSign signer = new WxCardSign();
+        signer.AddData(result.getString(weixinWork.getApiTicket()));
+        signer.AddData(weixinWork.getCorpId());
+        signer.AddData(new Date().getTime()+"");
+        signer.AddData(UuidUtil.getUUID());
+        signer.AddData("INVOICE");
+        result.put("signature", signer.GetSignature());
+		return MessageUtil.getSuccessMessage(result);
+    }
+	
+    private String getSignSha1(PageData pd) {
+    	StringBuilder sb = new StringBuilder();
+		sb.append("jsapi_ticket=").append(pd.getString("jsapi_ticket")).append("&")
+		  .append("noncestr=").append(pd.getString("noncestr")).append("&")
+		  .append("timestamp=").append(pd.getString("timestamp")).append("&")
+		  .append("url=").append(pd.getString("url"));
+		
+		String sha1 = SHA1Util.getSha1(sb.toString());
+		
+		return sha1;
+    }
+    
+}

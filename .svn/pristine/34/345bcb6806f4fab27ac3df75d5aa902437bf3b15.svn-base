@@ -1,0 +1,127 @@
+package com.ztessc.einvoice.util;
+
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+
+import java.security.Key;
+import java.util.Date;
+
+import javax.crypto.spec.SecretKeySpec;
+import javax.xml.bind.DatatypeConverter;
+
+public class JwtTokenUtil {
+
+	//token 过期时间5分钟
+    private static final long EXPIRE_TIME = 30 * 1000;
+    
+    //免登录时间为 7 天，由于app一旦登录，之后就不应该再进行登录，所以只要在此时间之内需要刷新token
+    private static final long REMEMBER_TIME = 1 * 60 * 1000;
+
+    //密钥为 userId + ZTESSC 组合
+	private static final String SUFFIX_SECRET = "_ZTESSC";
+	
+	/**
+     * 生成签名,5min后过期
+     * @author: 徐益森
+     * @date: 2018年5月21日 下午1:46:31
+     * @param {"id":"aaa","userName":"张三"}
+     * @return 加密的token
+     */
+    public static String sign(PageData user) {
+        try {
+        	//jwt的签发时间
+            Date iatTime = new Date();
+            //jwt的过期时间，这个过期时间必须要大于签发时间
+            Date expTime = new Date(iatTime.getTime() + EXPIRE_TIME);
+            //免登录时间
+            Date rememberTime = new Date(iatTime.getTime() + REMEMBER_TIME);
+            
+            return Jwts.builder()
+            			.claim("userId", user.getString("id"))
+            			.claim("userName", user.getString("userName"))
+            			.claim("rememberTime", rememberTime)
+            			.setNotBefore(iatTime)
+		            	.setIssuedAt(iatTime)
+		            	.setExpiration(expTime)
+		            	.signWith(SignatureAlgorithm.HS256, getKeyInstance())
+		            	.compact();
+        } catch (Exception e) {
+            return null;
+        }
+    }
+    
+    /**
+     * 校验token是否正确
+     * @author: 徐益森
+     * @date: 2018年5月21日 下午1:48:21
+     * @param token  jwt token
+     * @param secret 密钥
+     * @return 是否正确，0=正确，1=token过期，2=错误
+     */
+    public static int verify(String token) {
+        try {
+        	Jwts.parser().setSigningKey(getKeyInstance()).parseClaimsJws(token);
+            return 0;
+        } catch (ExpiredJwtException e) {
+            return 1;
+        } catch (Exception e) {
+        	e.printStackTrace();
+            return 2;
+        }
+    }
+    
+    public static PageData getPayload(String token) {
+    	String payloadStr = token.split("\\.")[1];
+    	
+    	PageData payload = PageData.parseJson(Base64Util.decode(payloadStr));
+    	
+    	return payload;
+    }
+    
+    public static PageData getUserInfo(String token) {
+    	PageData payload = getPayload(token);
+    	
+    	PageData user = new PageData();
+    	user.put("id", payload.getString("userId"));
+    	user.put("userName", payload.getString("userName"));
+    	
+    	return user;
+    }
+    
+    /**
+     * 刷新token
+     * @author: 徐益森
+     * @date: 2018年5月21日 下午3:30:54
+     * @param {}
+     * @return String
+     */
+    public static String refreshToken(String token) {
+    	return sign(getUserInfo(token));
+    }
+    
+    public static String getSecret(String userId) {
+    	return userId + SUFFIX_SECRET;
+    }
+    
+    private static Key getKeyInstance() {
+        //We will sign our JavaWebToken with our ApiKey secret
+        SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
+        byte[] apiKeySecretBytes = DatatypeConverter.parseBase64Binary("1234567");
+        Key signingKey = new SecretKeySpec(apiKeySecretBytes, signatureAlgorithm.getJcaName());
+        return signingKey;
+    }
+    
+    public static void main(String[] args) {
+//    	PageData user = new PageData();
+//    	user.put("id", "aaa");
+//    	user.put("userName", "张三");
+//		String token = sign(user);
+//System.out.println(token);
+		
+		int bool = verify("eyJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOiJhYWEiLCJ1c2VyTmFtZSI6IuW8oOS4iSIsInJlbWVtYmVyVGltZSI6MTUyNzA0NjQ3MDE1MCwibmJmIjoxNTI3MDQ2NDEwLCJpYXQiOjE1MjcwNDY0MTAsImV4cCI6MTUyNzA0NjQ0MH0.e-TskdZgiAv5rQUujNaskV5X3VguwlhVckPi22xPCug");
+System.out.println(bool);
+
+    	
+	}
+}

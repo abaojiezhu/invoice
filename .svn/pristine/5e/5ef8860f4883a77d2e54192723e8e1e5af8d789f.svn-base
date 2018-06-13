@@ -1,0 +1,22 @@
+package com.ztessc.einvoice.util;
+
+import java.util.Hashtable;
+import java.util.Map;
+
+public class CacheManager {
+
+	public static Map<String, PageData> userCache = new Hashtable<String, PageData>();
+	
+	public static void cache(String token, PageData userData) {
+		userCache.put(token, userData);
+	}
+	
+	public static PageData get(String key) {
+		return userCache.get(key);
+	}
+	
+	public static void remove(String key) {
+		userCache.remove(key);
+	}
+	
+}

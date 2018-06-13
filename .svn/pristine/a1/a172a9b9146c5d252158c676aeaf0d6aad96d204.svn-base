@@ -1,0 +1,68 @@
+package com.ztessc.einvoice.service;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.ztessc.einvoice.dao.DaoSupport;
+import com.ztessc.einvoice.util.PageData;
+import com.ztessc.einvoice.util.ShiroUtil;
+
+@Service
+public class InvoiceTitleService {
+	
+	@Autowired
+	private DaoSupport daoSupport;
+	
+	/**
+	 * 
+	 * @return
+	 */
+	public List<PageData> listInvoiceTitle(PageData pd) {
+		pd.put("userId", ShiroUtil.getCurrentUserId());
+		return daoSupport.listForPageData("InvoiceTitleMapper.listInvoiceTitle", pd);
+	}
+	
+	public List<PageData> listButtons() {
+		return daoSupport.listForPageData("AppButtonConfigMapper.listButtons", null);
+	}
+	
+	
+	public PageData findById(PageData pd) {
+		pd.put("userId", ShiroUtil.getCurrentUserId());
+		return daoSupport.findForPageData("InvoiceTitleMapper.findById", pd);
+	}
+	
+	
+	@Transactional
+	public void save(PageData pd) {
+		
+		//获取当前登陆人的ID 和当前时间
+		pd.fillCreatedData();
+		
+		pd.fillUpdatedData();
+		pd.put("userId", ShiroUtil.getCurrentUserId());
+		
+		daoSupport.save("InvoiceTitleMapper.save", pd);
+	}
+	
+	@Transactional
+	public void update(PageData pd) {
+		
+		//获取最后更新时间和 最后更新人ID
+		pd.fillUpdatedData();
+		
+		daoSupport.update("InvoiceTitleMapper.update", pd);
+	}
+	
+	@Transactional
+	public void delete(PageData pd) {
+		
+		//获取最后更新时间和 最后更新人ID
+		pd.fillUpdatedData();
+		
+		daoSupport.update("InvoiceTitleMapper.delete", pd);
+	}
+}

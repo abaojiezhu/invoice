@@ -1,0 +1,168 @@
+//package com.ztessc.einvoice.task;
+//
+//import java.text.MessageFormat;
+//
+//import org.apache.commons.lang3.StringUtils;
+//import org.springframework.core.env.Environment;
+//import org.springframework.scheduling.annotation.Scheduled;
+//import org.springframework.stereotype.Component;
+//
+//import com.alibaba.fastjson.JSON;
+//import com.alibaba.fastjson.JSONObject;
+//import com.ztessc.einvoice.util.ApplicationContextUtil;
+//import com.ztessc.einvoice.util.DateUtil;
+//import com.ztessc.einvoice.util.HttpClientUtil;
+//import com.ztessc.einvoice.util.PageData;
+//
+///**
+// * 每小时刷新一次微信公众平台 access_token 和 api_ticket
+// * Copyright © 2018 zte. All rights reserved.
+// * @Description: TODO
+// * @Title: FlushAccessTokenTask.java 
+// * @Prject: pl
+// * @Package: com.zte.pl.task 
+// * @ClassName: FlushAccessTokenTask 
+// * @author: 徐益森   
+// * @date: 2018年4月13日 上午9:42:01 
+// * @version: V1.0.0
+// */
+//@Component
+//public class FlushAccessTokenTask {
+//
+//	private static Environment env;
+//	
+//	private static PageData cache = new PageData();
+//	
+//	public static String ACCESS_TOKEN = "access_token";
+//	public static String API_TICKET = "api_ticket";
+//	
+//	public static String ACCESS_TOKEN_H5 = "access_token_h5";
+//	public static String API_TICKET_H5 = "api_ticket_h5";
+//	
+//	public static String ACCESS_TOKEN_WORK = "access_token_work";
+//	public static String API_TICKET_WORK = "api_ticket_work";
+//	
+//	private static Environment getEnvironment(){
+//		if(env == null) {
+//			env = (Environment) ApplicationContextUtil.getBean("environment");
+//		}
+//		return env;
+//	}
+//	
+//	@Scheduled(cron = "0 0 0/1 * * *")
+//	public void run() {
+//		System.out.println("每小时更新一次accessToken,当前更新时间为: " + DateUtil.getDateTime(DateUtil.getCurrentDateTime()));
+//		flushAccessToken();
+//		flushApiTicket();
+//		
+//		flushAccessTokenH5();
+//		flushApiTicketH5();
+//		
+//		flushAccessTokenWork();
+//		flushApiTicketWork();
+//	}
+//	
+//	private static void flushAccessToken() {
+//		String url = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid={0}&secret={1}";
+//		String appid = getEnvironment().getProperty("weixin.appid");
+//		String secret = getEnvironment().getProperty("weixin.secret");
+//		url = MessageFormat.format(url, appid, secret);
+//		String access_token = HttpClientUtil.get(url);
+//		JSONObject jsonObject = JSON.parseObject(access_token);
+//		cache.put(ACCESS_TOKEN, jsonObject.getString("access_token"));
+//	}
+//	
+//	private static void flushAccessTokenH5() {
+//		String url = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid={0}&secret={1}";
+//		String appid = getEnvironment().getProperty("weixin.h5.appid");
+//		String secret = getEnvironment().getProperty("weixin.h5.secret");
+//		url = MessageFormat.format(url, appid, secret);
+//		String access_token = HttpClientUtil.get(url);
+//		JSONObject jsonObject = JSON.parseObject(access_token);
+//		cache.put(ACCESS_TOKEN_H5, jsonObject.getString("access_token"));
+//	}
+//	
+//	private static void flushAccessTokenWork() {
+//		String url = "https://qyapi.weixin.qq.com/cgi-bin/gettoken?corpid={0}&corpsecret={1}";
+//		String corpid = getEnvironment().getProperty("weixin.work.corpid");
+//		String secret = getEnvironment().getProperty("weixin.work.secret");
+//		url = MessageFormat.format(url, corpid, secret);
+//		String access_token = HttpClientUtil.get(url);
+//		JSONObject jsonObject = JSON.parseObject(access_token);
+//		cache.put(ACCESS_TOKEN_WORK, jsonObject.getString("access_token"));
+//	}
+//	
+//	private static void flushApiTicket() {
+//		String url = "https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token={0}&type=wx_card";
+//		url = MessageFormat.format(url, cache.getString(ACCESS_TOKEN));
+//		String api_ticket = HttpClientUtil.get(url);
+//		JSONObject jsonObject = JSON.parseObject(api_ticket);
+//		cache.put(API_TICKET, jsonObject.getString("ticket"));
+//	}
+//	
+//	private static void flushApiTicketH5() {
+//		String url = "https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token={0}&type=wx_card";
+//		url = MessageFormat.format(url, cache.getString(ACCESS_TOKEN_H5));
+//		String api_ticket = HttpClientUtil.get(url);
+//		JSONObject jsonObject = JSON.parseObject(api_ticket);
+//		cache.put(API_TICKET_H5, jsonObject.getString("ticket"));
+//	}
+//	
+//	private static void flushApiTicketWork() {
+//		String url = "https://qyapi.weixin.qq.com/cgi-bin/get_jsapi_ticket?access_token={0}";
+//		url = MessageFormat.format(url, cache.getString(ACCESS_TOKEN_WORK));
+//		String api_ticket = HttpClientUtil.get(url);
+//		JSONObject jsonObject = JSON.parseObject(api_ticket);
+//		cache.put(API_TICKET_WORK, jsonObject.getString("ticket"));
+//	}
+//	
+//	public static String getAccessToken() {
+//		if(StringUtils.isBlank(cache.getString(ACCESS_TOKEN))) {
+//			flushAccessToken();
+//		}
+//		return cache.getString(ACCESS_TOKEN);
+//	}
+//	
+//	public static String getAccessTokenH5() {
+//		if(StringUtils.isBlank(cache.getString(ACCESS_TOKEN_H5))) {
+//			flushAccessTokenH5();
+//		}
+//		return cache.getString(ACCESS_TOKEN_H5);
+//	}
+//	
+//	public static String getAccessTokenWork() {
+//		if(StringUtils.isBlank(cache.getString(ACCESS_TOKEN_WORK))) {
+//			flushAccessTokenWork();
+//		}
+//		return cache.getString(ACCESS_TOKEN_WORK);
+//	}
+//	
+//	public static String getApiTicket() {
+//		if(StringUtils.isBlank(cache.getString(API_TICKET))) {
+//			flushApiTicket();
+//		}
+//		return cache.getString(API_TICKET);
+//	}
+//	
+//	public static String getApiTicketH5() {
+//		if(StringUtils.isBlank(cache.getString(API_TICKET_H5))) {
+//			flushApiTicketH5();
+//		}
+//		return cache.getString(API_TICKET_H5);
+//	}
+//	
+//	public static String getApiTicketWork() {
+//		if(StringUtils.isBlank(cache.getString(API_TICKET_WORK))) {
+//			flushApiTicketWork();
+//		}
+//		return cache.getString(API_TICKET_WORK);
+//	}
+//	
+//	public static String getAppId() {
+//		return getEnvironment().getProperty("weixin.appid");
+//	}
+//	
+//	public static String getAppIdH5() {
+//		return getEnvironment().getProperty("weixin.h5.appid");
+//	}
+//}

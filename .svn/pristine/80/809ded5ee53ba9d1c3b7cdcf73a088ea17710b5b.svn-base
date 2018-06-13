@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd"
+	 >
+<mapper namespace="InvoiceQueryMapper" >
+
+	<select id="listInvoiceInfo" parameterType="pd" resultType="pd">
+		select
+			t.BILLING_NO,
+			t.BILLING_CODE,
+			t.BUYER_NAME,
+			t.INVOICE_SOURCE,
+			t.BILLING_TIME,
+			t.VALID_STATE,
+			(select sd.DIC_VALUE from sys_dictionary sd where sd.DIC_KEY = t.VALID_STATE) as VALID_STATE_VALUE
+		from invoice t
+		<where>
+			<if test="billingNo != null">
+				and t.BILLING_NO like CONCAT('%',#{billingNo},'%')
+			</if>
+			<if test="billingCode != null">
+				and t.BILLING_CODE like CONCAT('%',#{billingCode},'%')
+			</if>
+			<if test="buyerName != null">
+				and t.BUYER_NAME like CONCAT('%',#{buyerName},'%')
+			</if>
+			<if test="billingStartTime != null">
+				and t.BILLING_TIME <![CDATA[ >= ]]> #{billingStartTime}
+			</if>
+			<if test="billingEndTime != null">
+				and t.BILLING_TIME <![CDATA[ <= ]]> #{billingEndTime}
+			</if>
+			<if test="validState != null">
+				and t.VALID_STATE = #{validState}
+			</if>
+		</where>
+	</select>
+	
+	
+	
+</mapper>

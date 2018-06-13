@@ -1,0 +1,46 @@
+package com.ztessc.einvoice.task;
+
+import java.util.Date;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
+
+import com.ztessc.einvoice.util.DateUtil;
+import com.ztessc.einvoice.weixin.WeixinApp;
+import com.ztessc.einvoice.weixin.WeixinH5;
+import com.ztessc.einvoice.weixin.WeixinWork;
+
+/**
+ * 每小时刷新一次微信公众平台 access_token 和 api_ticket
+ * 包括App端，H5端，企业微信端
+ * Copyright © 2018 zte. All rights reserved.
+ * @Description: TODO
+ * @Title: RefreshWeixinTask.java 
+ * @Prject: ztessc-einvoice
+ * @Package: com.ztessc.einvoice.task 
+ * @ClassName: RefreshWeixinTask 
+ * @author: 徐益森   
+ * @date: 2018年6月12日 上午9:00:14 
+ * @version: V1.0.0
+ */
+@Component
+public class RefreshWeixinTask {
+
+	@Autowired
+	private WeixinApp weixinApp;
+	@Autowired
+	private WeixinH5 weixinH5;
+	@Autowired
+	private WeixinWork weixinWork;
+	
+	@Scheduled(cron = "0 0 0/1 * * *")
+    public void refresh(){
+    	//获取当前时间
+        System.out.println("b当前时间为:" + DateUtil.getDateTime(new Date()));
+        weixinApp.refresh();
+        weixinH5.refresh();
+        weixinWork.refresh();
+    }
+	
+}

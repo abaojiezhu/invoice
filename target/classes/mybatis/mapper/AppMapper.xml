@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="AppMapper">
+
+	<!-- 获取最新版本号 -->
+	<select id="findLastVersion" parameterType="pd" resultType="pd">
+		select
+			t.LAST_VERSION,
+			(
+				select
+					if(count(*) > 0, 'Y', 'N')
+				from app_version_config t
+				where t.LAST_VERSION > #{version}
+				and t.PLATFORM = #{platform}
+				and t.FORCE_UPDATE = 'Y'
+				and t.IS_UPDATE = 'Y'
+			) FORCE_UPDATE,
+			t.IS_UPDATE,
+			t.UPDATE_DESC,
+			t.FILE_PATH
+		from app_version_config t
+		where t.LAST_VERSION > #{version}
+		and t.IS_UPDATE = 'Y'
+		and t.PLATFORM = #{platform}
+		order by t.LAST_VERSION desc
+		limit 1
+	</select>
+	
+	<!-- 保存APP端用户登录token信息 -->
+  	<insert id="saveToken" parameterType="pd">
+  		insert into app_token(ID,USER_ID,CREATED_DT) 
+  		values (
+  			#{id},
+  			#{userId},
+  			#{createdDt}
+  		)
+  	</insert>
+  	
+  	<delete id="clearToken" parameterType="String">
+  		delete from app_token where ID = #{token}
+  	</delete>
+  	
+</mapper>

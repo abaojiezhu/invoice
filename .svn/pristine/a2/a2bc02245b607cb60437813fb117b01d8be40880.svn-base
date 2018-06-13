@@ -1,0 +1,84 @@
+package com.ztessc.einvoice.controller;
+
+import java.util.List;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
+import com.ztessc.einvoice.service.UserService;
+import com.ztessc.einvoice.util.Const;
+import com.ztessc.einvoice.util.MessageUtil;
+import com.ztessc.einvoice.util.PageData;
+import com.ztessc.einvoice.util.ShiroUtil;
+
+@RequestMapping(value = "/user")
+@RestController
+public class UserController extends BaseController{
+	
+	@Autowired
+	private UserService userService;
+	
+	/**
+	 * 获取用户列表信息数据
+	 * @author:涂秋茂
+	 * @date: 2018年4月17日 
+	 * @param {"accountNo":"aaa","userName":"aaa","registerStartDt":"","registerEndDt":"","mobile":"13523252111","pageNum":"0","pageSize":"10"}
+	 * @return PageData
+	 */
+    @RequestMapping(value = "/list")
+    @ResponseBody
+    public PageData list() {
+    	PageData params = this.getPageData();
+    	String pageNum = params.getString("pageNum");
+    	String pageSize = params.getString("pageSize");
+    	Page<Object> page = PageHelper.startPage(Integer.parseInt(pageNum) , Integer.parseInt(pageSize));
+    	List<PageData> list = userService.listBaseUser(params);
+        return MessageUtil.getSuccessMessage(this.getPageResult(page, list));
+    }
+    
+    /**
+     * 用户保存或修改
+     * @author Diy
+     * @param {"id":"aa","accountNo":"aa","password":"sadsa","userName":"bb","mobile":"135821236211","email":"qq@qq.com","enabled":"Y"}
+     */
+	@RequestMapping(value = "/saveOrUpdateUser", method = RequestMethod.POST)
+	public PageData save() {
+		PageData params = this.getPageData();
+		
+		String id = params.getString("id");
+		
+		if(StringUtils.isBlank(id)){  
+			userService.save(params);
+		}else{
+			userService.update(params);
+		}
+		
+		return MessageUtil.getSuccessMessage(Const.MESSAGE_SUCCESS_SAVE);
+	}
+	
+	
+	/**
+	 * 根据用户ID 获取权限列表
+	 * @author TQM
+	 * @date 2018年4月26日19:42:18
+	 * @return 
+	 */
+    @RequestMapping(value = "/listUserFuncByUser")
+    @ResponseBody
+    public PageData listUserFunc() {
+    	PageData params = this.getPageData();
+    	PageData currentUserData = ShiroUtil.getCurrentUserData();
+    	List<PageData> list = userService.listUserFuncByUser();
+    	params.put("list", list);
+    	params.put("userName", currentUserData.getString("userName"));
+        return MessageUtil.getSuccessMessage(params);
+    }
+	
+	
+}

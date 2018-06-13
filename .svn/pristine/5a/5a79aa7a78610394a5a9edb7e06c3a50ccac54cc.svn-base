@@ -1,0 +1,108 @@
+package com.ztessc.einvoice.util;
+
+import java.io.UnsupportedEncodingException;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.JWTVerifier;
+import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.exceptions.JWTDecodeException;
+import com.auth0.jwt.interfaces.Claim;
+import com.auth0.jwt.interfaces.DecodedJWT;
+
+public class JWTUtil {
+
+	 // 过期时间5分钟
+    private static final long EXPIRE_TIME = 5 * 1000;
+
+    private static final String INVOICE_APP_USER_SECRET = "";
+    
+    /**
+     * 校验token是否正确
+     *
+     * @param token  密钥
+     * @param secret 用户的密码
+     * @return 是否正确
+     */
+    public static boolean verify(String token, String username, String secret) {
+        try {
+            Algorithm algorithm = Algorithm.HMAC256(secret);
+            JWTVerifier verifier = JWT.require(algorithm)
+//                    .withClaim("username", username)
+                    .build();
+            DecodedJWT jwt = verifier.verify(token);
+            String header = jwt.getHeader();
+            String asString = jwt.getHeaderClaim("age").asString();
+            return true;
+        } catch (Exception e) {
+        	e.printStackTrace();
+            return false;
+        }
+    }
+
+    /**
+     * 获得token中的信息无需secret解密也能获得
+     *
+     * @return token中包含的用户名
+     */
+    public static String getUsername(String token) {
+        try {
+            DecodedJWT jwt = JWT.decode(token);
+            String header = jwt.getHeader();
+            Map<String, Claim> map = jwt.getClaims();
+            List<String> audience = jwt.getAudience();
+            String string = jwt.toString();
+            String decode = Base64Util.decode(header);
+            String payload = jwt.getPayload();
+            String decode2 = Base64Util.decode(payload);
+            
+            return jwt.getClaim("username").asString();
+//            return jwt.getHeaderClaim("username").asString();
+        } catch (JWTDecodeException e) {
+            return null;
+        }
+    }
+    
+    /**
+     * 生成签名,5min后过期
+     *
+     * @param username 用户名
+     * @param secret   用户的密码
+     * @return 加密的token
+     */
+    public static String sign(Map<String, Object> map, String secret) {
+        try {
+            Date date = new Date(System.currentTimeMillis() + EXPIRE_TIME);
+            Algorithm algorithm = Algorithm.HMAC256(secret);
+            // 附带username信息
+            return JWT.create()
+                    .withClaim("username", map.get("username").toString())
+                    .withClaim("age", map.get("age").toString())
+//                    .withHeader(map)
+//                    .withExpiresAt(date)
+                    .sign(algorithm);
+        } catch (UnsupportedEncodingException e) {
+            return null;
+        }
+    }
+    
+    public static void main(String[] args) {
+    	Map<String, Object> map = new HashMap<String, Object>();
+    	map.put("username", "zhangsan");
+    	map.put("age", "30");
+		String token = sign(map,"888888");
+System.out.println(token);
+		
+		String username = getUsername(token);
+System.out.println(username);
+		
+		boolean bool = verify("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InpoYW5nc2FuIiwiYWdlIjoiMzAifQ.rIwv-o5TfFDu8efnfR_qgtMHvycqMPjDEEFZ4eUtV5c", username, "888888");
+System.out.println(bool);
+		
+		
+
+	}
+}

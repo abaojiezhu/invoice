@@ -1,0 +1,118 @@
+package com.ztessc.einvoice.service;
+
+import java.util.List;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.ztessc.einvoice.dao.DaoSupport;
+import com.ztessc.einvoice.exception.BizException;
+import com.ztessc.einvoice.util.PageData;
+import com.ztessc.einvoice.util.ShiroUtil;
+
+@Service
+public class InvoiceTitleService {
+	
+	@Autowired
+	private DaoSupport daoSupport;
+	
+	/**
+	 * 
+	 * @return
+	 */
+	public List<PageData> listInvoiceTitle(PageData pd) {
+		pd.put("userId", ShiroUtil.getCurrentUserId());
+		return daoSupport.listForPageData("InvoiceTitleMapper.listInvoiceTitle", pd);
+	}
+	
+	public PageData findById(PageData pd) {
+		pd.put("userId", ShiroUtil.getCurrentUserId());
+		return daoSupport.findForPageData("InvoiceTitleMapper.findById", pd);
+	}
+	
+	/**
+	 * 新增发票抬头验重
+	 * @author TQM
+	 * @param pd
+	 * @return
+	 */
+	public PageData findInvoiceTitleBytaxNumAndName(PageData pd) {
+		return daoSupport.findForPageData("InvoiceTitleMapper.findInvoiceTitleBytaxNumAndName", pd);
+	}
+	/**
+	 * 修改发票抬头验重
+	 * @author TQM
+	 * @param pd
+	 * @return
+	 */
+	public PageData findInvoiceTitleByIdAndtaxNumAndName(PageData pd) {
+		return daoSupport.findForPageData("InvoiceTitleMapper.findInvoiceTitleByIdAndtaxNumAndName", pd);
+	}
+	
+	
+	@Transactional
+	public void save(PageData pd) {
+		if(StringUtils.isBlank(pd.getString("name"))) {
+			throw new BizException("公司名称不能为空");
+		}
+//		if(StringUtils.isBlank(pd.getString("taxNumber"))) {
+//			throw new BizException("税号不能为空");
+//		}
+		if(StringUtils.isNotBlank(pd.getString("taxNumber")) && !pd.getString("taxNumber").matches("[0-9a-zA-Z]{15,20}")) {
+			throw new BizException("税号必须满足15~20位");
+		}
+//		if(StringUtils.isBlank(pd.getString("address"))) {
+//			throw new BizException("公司地址不能为空");
+//		}
+//		if(StringUtils.isBlank(pd.getString("phoneNumber"))) {
+//			throw new BizException("手机号不能为空");
+//		}
+//		if(StringUtils.isNotBlank(pd.getString("phoneNumber")) && !pd.getString("phoneNumber").matches("^((13[0-9])|(15[^4])|(18[0,2,3,5-9])|(17[0-8])|(147))\\d{8}$")) {
+//			throw new BizException("请输入11位手机号");
+//		}
+//		if(StringUtils.isBlank(pd.getString("bankName"))) {
+//			throw new BizException("开户银行不能为空");
+//		}
+//		if(StringUtils.isBlank(pd.getString("bankAccount"))) {
+//			throw new BizException("银行账号不能为空");
+//		}
+		
+		pd.put("userId", ShiroUtil.getCurrentUserId());
+		PageData invoice = this.findInvoiceTitleBytaxNumAndName(pd);
+		if(invoice != null && invoice.size() > 0) {
+			throw new BizException("发票抬头信息已存在");
+		}
+
+		
+		//获取当前登陆人的ID 和当前时间
+		pd.fillCreatedData();
+		
+		pd.fillUpdatedData();
+		
+		daoSupport.save("InvoiceTitleMapper.save", pd);
+	}
+	
+	@Transactional
+	public void update(PageData pd) {
+		pd.put("userId", ShiroUtil.getCurrentUserId());
+		PageData invoice = this.findInvoiceTitleByIdAndtaxNumAndName(pd);
+		if(invoice != null && invoice.size() > 0) {
+			throw new BizException("发票抬头信息已存在");
+		}
+		//获取最后更新时间和 最后更新人ID
+		pd.fillUpdatedData();
+		
+		daoSupport.update("InvoiceTitleMapper.update", pd);
+	}
+	
+	@Transactional
+	public void delete(PageData pd) {
+		
+		//获取最后更新时间和 最后更新人ID
+		pd.fillUpdatedData();
+		
+		daoSupport.update("InvoiceTitleMapper.delete", pd);
+	}
+}

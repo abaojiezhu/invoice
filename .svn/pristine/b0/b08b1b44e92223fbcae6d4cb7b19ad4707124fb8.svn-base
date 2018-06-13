@@ -1,0 +1,38 @@
+package com.ztessc.einvoice.interceptor;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
+
+import com.ztessc.einvoice.exception.BizException;
+import com.ztessc.einvoice.util.PageData;
+import com.ztessc.einvoice.util.ShiroUtil;
+import com.ztessc.einvoice.util.TokenUtil;
+
+public class AppTokenInterceptor extends HandlerInterceptorAdapter {
+
+	@Override
+	public boolean preHandle(HttpServletRequest request,
+			HttpServletResponse response, Object handler) throws Exception {
+
+//		String token = request.getHeader("token");
+		String cookie = request.getHeader("Cookie");
+		String token = cookie.split("=")[1].trim();
+System.out.println("token--------" + token);
+
+		//token为空，非法请求
+		if(StringUtils.isBlank(token)){
+			throw new BizException("非法请求");
+		}
+		
+		PageData userData = TokenUtil.getToken(token);
+		if(userData == null) {
+			throw new BizException("帐号已失效，请重新登录");
+		}
+		ShiroUtil.setCurrentUserData(userData);
+		
+		return super.preHandle(request, response, handler);
+	}
+}

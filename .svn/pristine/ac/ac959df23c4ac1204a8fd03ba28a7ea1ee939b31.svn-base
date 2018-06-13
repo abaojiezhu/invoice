@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="InvoiceTitleMapper">
+
+	<select id="listInvoiceTitle" parameterType="pd" resultType="pd">
+		select
+			t.ID,
+			t.NAME,
+			t.TAX_NUMBER,
+			t.ADDRESS,
+			t.PHONE_NUMBER,
+			t.BANK_NAME,
+			t.BANK_ACCOUNT,
+			t.CREATED_DT,
+			t.CREATED_USER_ID,
+			t.UPDATED_DT,
+			t.UPDATED_USER_ID
+		from invoice_title t
+		where  t.IS_DEL = 'N'
+		and t.USER_ID = #{userId}
+		
+	</select>
+	
+	
+		<select id="findById" parameterType="pd" resultType="pd">
+		select
+			t.ID,
+			t.NAME,
+			t.TAX_NUMBER,
+			t.ADDRESS,
+			t.PHONE_NUMBER,
+			t.BANK_NAME,
+			t.BANK_ACCOUNT,
+			t.CREATED_DT,
+			t.CREATED_USER_ID,
+			t.UPDATED_DT,
+			t.UPDATED_USER_ID
+		from invoice_title t
+		where t.ID = #{id}
+		and t.IS_DEL = 'N'
+		and t.USER_ID = #{userId}
+	</select>
+	
+	
+	
+	<insert id="save" parameterType="pd">
+		insert into invoice_title
+		<trim prefix="(" suffix=")" suffixOverrides="," >
+			<if test="id != null" >
+				ID,
+			</if>
+			<if test="userId != null" >
+				USER_ID,
+			</if>
+			<if test="name != null" >
+				NAME,
+			</if>
+			<if test="taxNumber != null" >
+				TAX_NUMBER,
+			</if>
+			<if test="address != null" >
+				ADDRESS,
+			</if>
+			<if test="phoneNumber != null" >
+				PHONE_NUMBER,
+			</if>
+			<if test="bankName != null" >
+				BANK_NAME,
+			</if>
+			<if test="bankAccount != null" >
+				BANK_ACCOUNT,
+			</if>
+			<if test="createdDt != null" >
+				CREATED_DT,
+			</if>
+			<if test="createdUserId != null" >
+				CREATED_USER_ID,
+			</if>
+			<if test="updatedDt != null" >
+				UPDATED_DT,
+			</if>
+			<if test="updatedUserId != null" >
+				UPDATED_USER_ID,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides="," >
+			<if test="id != null" >
+				#{id},
+			</if>
+			<if test="userId != null" >
+				#{userId},
+			</if>
+			<if test="name != null" >
+				 #{name},
+			</if>
+			<if test="taxNumber != null" >
+				 #{taxNumber},
+			</if>
+			<if test="address != null" >
+				 #{address},
+			</if>
+			<if test="phoneNumber != null" >
+				 #{phoneNumber},
+			</if>
+			<if test="bankName != null" >
+				 #{bankName},
+			</if>
+			<if test="bankAccount != null" >
+				#{bankAccount},
+			</if>
+			<if test="createdDt != null" >
+				 #{createdDt},
+			</if>
+			<if test="createdUserId != null" >
+				 #{createdUserId},
+			</if>
+			<if test="updatedDt != null" >
+				#{updatedDt},
+			</if>
+			<if test="updatedUserId != null" >
+				#{updatedUserId},
+			</if>
+		</trim>
+	</insert>
+
+	<update id="update" parameterType="pd">
+		update invoice_title
+		<set>
+			<if test="name != null" >
+				NAME = #{name},
+			</if>
+			<if test="taxNumber != null" >
+				TAX_NUMBER = #{taxNumber},
+			</if>
+			<if test="address != null" >
+				ADDRESS = #{address},
+			</if>
+			<if test="phoneNumber != null" >
+				PHONE_NUMBER = #{phoneNumber},
+			</if>
+			<if test="bankName != null" >
+				BANK_NAME = #{bankName},
+			</if>
+			<if test="blankAccount != null" >
+				BANK_ACCOUNT = #{bankAccount},
+			</if>
+			<if test="updatedDt != null" >
+				UPDATED_DT = #{updatedDt},
+			</if>
+			<if test="updatedUserId != null" >
+				UPDATED_USER_ID = #{updatedUserId}
+			</if>
+		</set>
+		where ID = #{id}
+	</update>
+ 
+    	<update id="delete" parameterType="pd">
+		update invoice_title
+		<set>
+			IS_DEL = 'Y'
+		</set>
+		where ID = #{id}
+	</update>
+    
+    <select id="findInvoiceTitleBytaxNumAndName" parameterType="pd" resultType="pd">
+    	select 
+    		NAME,
+    		TAX_NUMBER,
+    		ADDRESS,
+    		PHONE_NUMBER,
+    		BANK_NAME,
+    		BANK_ACCOUNT,
+    		IS_DEL
+    		from invoice_title
+    		where NAME =  #{name}
+    			and USER_ID = #{userId}
+				and TAX_NUMBER = #{taxNumber}
+				and IS_DEL = 'N'
+    </select>
+    
+    <select id="findInvoiceTitleByIdAndtaxNumAndName" parameterType="pd" resultType="pd">
+    	select 
+    		NAME,
+    		TAX_NUMBER,
+    		ADDRESS,
+    		PHONE_NUMBER,
+    		BANK_NAME,
+    		BANK_ACCOUNT,
+    		IS_DEL
+    		from invoice_title
+    		where ID != #{id}
+    			and NAME =  #{name}
+    			and USER_ID = #{userId}
+				and TAX_NUMBER = #{taxNumber}
+				and IS_DEL = 'N'
+    </select>
+
+
+</mapper>

@@ -1,0 +1,76 @@
+package com.ztessc.einvoice.util;
+
+import java.io.Serializable;
+
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authc.AuthenticationToken;
+import org.apache.shiro.realm.AuthorizingRealm;
+import org.apache.shiro.session.Session;
+import org.apache.shiro.subject.Subject;
+
+import com.ztessc.einvoice.shiro.ShiroRealm;
+
+public class ShiroUtil {
+	
+	private static AuthorizingRealm shiroRealm = (AuthorizingRealm) ApplicationContextUtil.getBean("shiroRealm");
+	
+	public static AuthorizingRealm getShiroRealm(){
+		return shiroRealm;
+	}
+	
+	public static Subject getCurrentUser() {
+		return SecurityUtils.getSubject();
+	}
+	
+	public static Session getSession() {
+		return getCurrentUser().getSession();
+	}
+	
+	public static Serializable getSessionId(){
+		return getSession().getId();
+	}
+	
+	public static PageData getCurrentUserData(){
+		if(getSession().getAttribute(Const.SESSION_LOGIN_USER) == null){
+			refreshSession();
+		}
+		return (PageData) getSession().getAttribute(Const.SESSION_LOGIN_USER);
+	}
+	
+	public static String  getCurrentUserId(){
+		return getCurrentUserData().getString("id");
+	}
+	
+	public static void setCurrentUserData(PageData pd){
+		getSession().setAttribute(Const.SESSION_LOGIN_USER, pd);
+	}
+	
+	/**
+	 * 刷新session登录用户信息
+	 */
+	private static void refreshSession(){
+		PageData pd =  (PageData) getCurrentUser().getPrincipal();
+		if(pd != null && !pd.isEmpty()){
+			getSession().setAttribute(Const.SESSION_LOGIN_USER, pd);
+		}
+	}
+	
+	public static void clearSessionUser(){
+		getSession().removeAttribute(Const.SESSION_LOGIN_USER);
+	}
+	
+	public static void clearAuthorizationCache() {
+		if (shiroRealm instanceof ShiroRealm) {
+			((ShiroRealm) shiroRealm).clearCachedAuthorizationInfo();
+		}
+	}
+   
+	public static void login(AuthenticationToken at) {
+		clearSessionUser();
+		getCurrentUser().login(at);
+	}
+	
+	public static void logout() {
+		getCurrentUser().logout();
+	}
+}

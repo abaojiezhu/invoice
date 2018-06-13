@@ -1,0 +1,48 @@
+package com.ztessc.einvoice.weixin;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
+import org.springframework.stereotype.Component;
+
+@Component
+public class WeixinH5 {
+
+	private static String TOKEN_URL = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid={0}&secret={1}";
+	
+	private static String TICKET_URL = "https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token={0}&type=wx_card";
+	
+	@Autowired
+	private Environment env;
+	
+	private static String accessToken;
+	
+	private static String apiTicket;
+	
+	public void flush() {
+		getAccessToken();
+		getApiTicket();
+	}
+	
+	public String getAccessToken() {
+		if(StringUtils.isBlank(accessToken)) {
+			accessToken = WeixinUtil.refreshAccessToken(TOKEN_URL, getAppId(), getSecret());
+		}
+		return accessToken;
+	}
+	
+	public String getApiTicket() {
+		if(StringUtils.isBlank(apiTicket)) {
+			apiTicket = WeixinUtil.refreshApiTicket(TICKET_URL, getAccessToken());
+		}
+		return apiTicket;
+	}
+	
+	public String getAppId() {
+		return env.getProperty("weixin.h5.appid");
+	}
+	
+	public String getSecret() {
+		return env.getProperty("weixin.h5.secret");
+	}
+}

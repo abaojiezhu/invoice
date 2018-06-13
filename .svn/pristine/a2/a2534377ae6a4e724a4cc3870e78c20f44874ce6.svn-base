@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd"
+	 >
+<mapper namespace="UserMapper" >
+
+	<select id="findBy" parameterType="pd" resultType="pd">
+		select  t.ID,
+		 t.ACCOUNT_NO,
+		 t.PASSWORD,
+		 t.USER_NAME,
+		 t.USER_CODE,
+		 t.MOBILE,
+		 t.EMAIL,
+		 t.ENABLED,
+		 t.CREATED_DT,
+		 t.CREATED_USER_ID,
+		 t.UPDATED_DT,
+		 t.UPDATED_USER_ID,
+		 t.REGISTER_DT,
+		 t.DISABLE_DT
+		  from base_user t
+		where t.ACCOUNT_NO = #{username}
+		and t.ENABLED = 'Z001001'
+	</select>
+	
+	<!--获取用户所有角色 -->
+	<select id="listUserRoles" parameterType="pd" resultType="string">
+		select
+			sru.ROLE_ID
+		from
+			base_user t
+		join sys_role_user sru on t.ID = sru.USER_ID
+		where
+			t.id = #{id}
+	</select>
+	
+	<!--获取用户所有权限 -->
+	<select id="listUserPermissions" parameterType="pd" resultType="string">
+		select
+			tf.FUNC_NAME
+		from
+			base_user tu
+		join sys_role_user tru on tu.id = tru.USER_ID
+		join sys_role_func trf on trf.role_id = tru.ROLE_ID
+		join sys_func tf on tf.id = trf.func_id
+		where tu.ID = #{id}
+	</select>
+	
+	<select id="listUserByKeyword" parameterType="pd" resultType="pd">
+		select 
+			t.ID,
+			t.USER_NAME,
+			t.USER_CODE
+		from base_user t
+		where 
+			(
+				t.USER_CODE like CONCAT('%', #{keyword}, '%')
+				or 
+				t.USER_NAME like CONCAT('%', #{keyword}, '%')
+			)
+		limit 5
+	</select>
+	
+	<!--获取用户所有权限 -->
+	<select id="listFuncsByUser" parameterType="pd" resultType="pd">
+		select
+			distinct
+			tf.ID,
+			tf.FUNC_NAME,
+			tf.FUNC_URL,
+			tf.PARENT_ID,
+			tf.TYPE_LEVEL,
+			tf.SORT
+		from
+			base_user tu
+		join sys_role_user tru on tu.id = tru.USER_ID
+		join sys_role_func trf on trf.role_id = tru.ROLE_ID
+		join sys_func tf on tf.id = trf.func_id
+		where tu.ID = #{id}
+	</select>
+	
+	<select id="listBaseUser" parameterType="pd" resultType="pd">
+		select t.ID,
+		 t.ACCOUNT_NO,
+		 t.USER_NAME,
+		 t.USER_CODE,
+		 t.MOBILE,
+		 t.EMAIL,
+		 t.ENABLED,
+		 t.CREATED_DT,
+		 t.CREATED_USER_ID,
+		 t.UPDATED_DT,
+		 t.UPDATED_USER_ID,
+		 t.REGISTER_DT,
+		 t.DISABLE_DT,
+		 (select sd.DIC_VALUE from sys_dictionary sd where sd.DIC_KEY = t.ENABLED) as ENABLED_VALUE from base_user t
+		<where>
+			<if test="accountNo != null">
+				and t.ACCOUNT_NO  like CONCAT('%', #{accountNo}, '%')
+			</if>
+			<if test="userName != null">
+				and t.USER_NAME  like CONCAT('%', #{userName}, '%')
+			</if>
+			<if test="registerStartDt != null">
+				and t.REGISTER_DT <![CDATA[ >= ]]> #{registerStartDt}
+			</if>
+			<if test="registerEndDt != null">
+				and t.REGISTER_DT <![CDATA[ <= ]]> #{registerEndDt}
+			</if>
+			<if test="mobile != null">
+				and t.MOBILE  like CONCAT('%', #{mobile}, '%')
+			</if>
+			
+		</where>
+		
+	</select>
+	
+	
+	<insert id="save" parameterType="pd">
+		insert into base_user
+		<trim prefix="(" suffix=")" suffixOverrides="," >
+			<if test="id != null" >
+				ID,
+			</if>
+			<if test="accountNo != null">
+				 ACCOUNT_NO,
+			</if>
+			<if test="password != null">
+				PASSWORD,
+			</if>
+			<if test="userName != null">
+				USER_NAME,
+			</if>
+			<if test="mobile != null">
+				MOBILE,
+			</if>
+			<if test="email != null">
+				EMAIL,
+			</if>
+			<if test="enabled != null">
+				enabled,
+			</if>
+			<if test="createdDt != null" >
+				CREATED_DT,
+			</if>
+			<if test="createdUserId != null" >
+				CREATED_USER_ID,
+			</if>
+			<if test="updatedDt != null" >
+				UPDATED_DT,
+			</if>
+			<if test="updatedUserId != null" >
+				UPDATED_USER_ID,
+			</if>
+			<if test="registerDt != null" >
+				REGISTER_DT,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides="," >
+			<if test="id != null" >
+				#{id},
+			</if>
+			<if test="accountNo != null">
+				 #{accountNo},
+			</if>
+			<if test="password != null">
+				#{password},
+			</if>
+			<if test="userName != null">
+				#{userName},
+			</if>
+			<if test="mobile != null">
+				#{mobile},
+			</if>
+			<if test="email != null">
+				#{email},
+			</if>
+			<if test="enabled != null">
+				#{enabled},
+			</if>
+			<if test="createdDt != null" >
+				#{createdDt},
+			</if>
+			<if test="createdUserId != null" >
+				#{createdUserId},
+			</if>
+			<if test="updatedDt != null" >
+				#{updatedDt},
+			</if>
+			<if test="updatedUserId != null" >
+				#{updatedUserId},
+			</if>
+			<if test="registerDt != null" >
+				#{registerDt},
+			</if>
+		</trim>
+	</insert>
+	
+	<!-- 修改用户信息 -->
+	<update id="update" parameterType="pd">
+		update base_user
+		<set>
+			<if test="accountNo != null">
+				ACCOUNT_NO = #{accountNo},
+			</if>
+			<if test="password != null">
+				PASSWORD = #{password},
+			</if>
+			<if test="userName != null">
+				USER_NAME = #{userName},
+			</if>
+			<if test="mobile !=null">
+				MOBILE =#{mobile},
+			</if>
+			<if test="email != null">
+				EMAIL = #{email},
+			</if>
+			<if test="enabled != null">
+				ENABLED = #{enabled},
+			</if>
+			<if test="disableDt != null" >
+				DISABLE_DT = #{disableDt},
+			</if>
+			<if test="updatedUserId != null" >
+				UPDATED_USER_ID = #{updatedUserId},
+			</if>
+			<if test="updatedDt != null" >
+				UPDATED_DT = #{updatedDt}
+			</if>
+		</set>
+		where id = #{id}
+	</update>
+	
+</mapper>

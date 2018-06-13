@@ -1,0 +1,78 @@
+package com.ztessc.einvoice.controller;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
+import com.ztessc.einvoice.service.SysTaskService;
+import com.ztessc.einvoice.util.Const;
+import com.ztessc.einvoice.util.MessageUtil;
+import com.ztessc.einvoice.util.PageData;
+
+@RequestMapping(value = "/systask")
+@RestController
+public class SysTaskController extends BaseController{
+	
+	@Autowired
+	private SysTaskService sysTaskService;
+	
+	/**
+	 * 获取所有数据
+	 * @author:涂秋茂
+	 * @date: 2018年4月17日 
+	 * @param {"taskNo":"111","updatedStartDt":"","updatedEndDt":"","enabled":"" ,"pageNum":"0","pageSize":"10"}
+	 * @return PageData
+	 */
+	@PostMapping(value = "/list")
+    public PageData list() {
+    	PageData params = this.getPageData();
+    	
+    	String pageNum = params.getString("pageNum");
+    	String pageSize = params.getString("pageSize");
+    	Page<Object> page = PageHelper.startPage(Integer.parseInt(pageNum) , Integer.parseInt(pageSize));
+    	List<PageData> list = sysTaskService.listSysTask(params);
+		PageData pageResult = this.getPageResult(page, list);
+    	
+    	
+    	
+        return MessageUtil.getSuccessMessage(pageResult);
+    }
+    
+    
+    /**
+     * 修改任务
+     * @param {"id":"aaa","taskNo":"aa","taskName":"asd","runType":"","enabled":"","planStartTime":"2018-04-25,1(时),30(分)","planEndTime":"2018-04-25,1(时),30(分)","intervalTime":"10（分）,2（时）,1（天）",}
+     * @return
+     */
+	@PostMapping(value = "/update")
+	public PageData update() {
+		
+		PageData params = this.getPageData();
+		params.transEmptyToNull();
+		sysTaskService.update(params);
+		
+		return MessageUtil.getSuccessMessage(Const.MESSAGE_SUCCESS_UPDATE);
+	}
+	
+	
+	/**
+	 * 修改状态
+	 * @param 
+	 * @return
+	 */
+//	@PostMapping(value = "/updateStatus")
+//	public PageData updateStatus(MultipartHttpServletRequest multipartHttpServletRequest) {
+//		
+//		PageData params = this.getPageData();
+//		
+//		sysTaskService.update(params);
+//		
+//		return MessageUtil.getSuccessMessage();
+//	}
+
+}

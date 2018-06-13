@@ -1,0 +1,52 @@
+package com.ztessc.einvoice.util;
+
+import java.util.Date;
+import java.util.Hashtable;
+import java.util.Map;
+
+import com.ztessc.einvoice.dao.DaoSupport;
+import com.ztessc.einvoice.service.UserService;
+
+public class TokenUtil {
+
+	private static DaoSupport daoSupport = (DaoSupport) ApplicationContextUtil.getBean("daoSupport");
+	
+	private static UserService userService = (UserService) ApplicationContextUtil.getBean("userService");
+	
+	public static Map<String, PageData> cache = new Hashtable<String, PageData>(); 
+	
+	public static String createToken(PageData userData) {
+		String token = UuidUtil.getUUID();
+		userData.put("token", token);
+		//将token放入缓存
+		cache.put(token, userData);
+		
+		ShiroUtil.setCurrentUserData(userData);
+		
+		//将token放入数据库
+		PageData tokenData = new PageData();
+		tokenData.put("id", token);
+		tokenData.put("userId", userData.getString("id"));
+		tokenData.put("createdDt", new Date());
+		
+		daoSupport.save("AppMapper.saveToken", tokenData);
+		
+		return token;
+	}
+	
+	public static PageData getToken(String token) {
+		//先从缓存中取
+		PageData userData = cache.get(token);
+		//如果缓存中没有，从数据库获取
+		if(userData == null) {
+			userData = userService.findByToken(token);
+		}
+		return userData;
+	}
+	
+	public static void clearToken() {
+		String token = ShiroUtil.getCurrentUserData().getString("token");
+		cache.remove(token);
+		daoSupport.delete("AppMapper.clearToken", token);
+	}
+}

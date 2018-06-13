@@ -1,0 +1,18 @@
+package com.ztessc.einvoice.exception;
+
+public class BizException extends RuntimeException {
+
+	private static final long serialVersionUID = -8282365276679936350L;
+
+	public BizException() {
+	} 
+
+	public BizException(String message) {
+		super(message);
+	}
+	
+	public BizException(String message,Throwable cause) {
+		super(message,cause);
+	}
+
+}

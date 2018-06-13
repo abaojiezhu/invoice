@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="LogMapper">
+
+
+	<select id="listLogInfo" parameterType="pd" resultType="pd">
+		select 
+			bu.ACCOUNT_NO,
+			bu.USER_NAME,
+			t.CREATED_DT,
+			t.IP,
+			t.SYSTEM_VERSION,
+			t.LOG_TYPE,
+			u.DESCRIPT
+		from sys_log t
+		inner join base_user bu on bu.ID = t.USER_ID
+		left join sys_log_url u on u.ID = t.URL_ID
+		<where>
+			<if test="accountNo != null">
+				and bu.ACCOUNT_NO like CONCAT('%',#{accountNo},'%')
+			</if>
+			<if test="userName != null">
+				and bu.USER_NAME like CONCAT('%',#{userName},'%')
+			</if>
+			<if test="logType != null">
+				and t.LOG_TYPE = #{logType}
+			</if>
+			<if test="createStartDt != null">
+				and t.CREATED_DT  <![CDATA[ >= ]]>
+				#{createStartDt}
+			</if>
+			<if test="createEndDt != null">
+				and t.CREATED_DT <![CDATA[ <= ]]>
+				#{createEndDt}
+			</if>
+		</where>
+			order by t.CREATED_DT desc
+	</select>
+
+	<insert id="save" parameterType="pd">
+		insert into sys_log
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				ID,
+			</if>
+			<if test="userId != null">
+				USER_ID,
+			</if>
+			<if test="ip != null">
+				IP,
+			</if>
+			<if test="beginTime != null">
+				BEGIN_TIME,
+			</if>
+			<if test="endTime != null">
+				END_TIME,
+			</if>
+			<if test="useTime != null">
+				USE_TIME,
+			</if>
+			<if test="urlId != null">
+				URL_ID,
+			</if>
+			<if test="clientType != null">
+				CLIENT_TYPE,
+			</if>
+			<if test="logType != null">
+				LOG_TYPE,
+			</if>
+			<if test="systemVersion != null">
+				SYSTEM_VERSION,
+			</if>
+			<if test="operaResult != null">
+				OPERA_RESULT,
+			</if>
+			<if test="exceptionMsg != null">
+				EXCEPTION_MSG,
+			</if>
+			<if test="exceptionType != null">
+				EXCEPTION_TYPE,
+			</if>
+			<if test="requestParams != null">
+				REQUEST_PARAMS,
+			</if>
+			<if test="sessionId != null">
+				SESSION_ID,
+			</if>
+			<if test="createdDt != null">
+				CREATED_DT,
+			</if>
+			<if test="createdUserId != null">
+				CREATED_USER_ID,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				#{id},
+			</if>
+			<if test="userId != null">
+				#{userId},
+			</if>
+			<if test="ip != null">
+				#{ip},
+			</if>
+			<if test="beginTime != null">
+				#{beginTime},
+			</if>
+			<if test="endTime != null">
+				#{endTime},
+			</if>
+			<if test="useTime != null">
+				#{useTime},
+			</if>
+			<if test="urlId != null">
+				#{urlId},
+			</if>
+			<if test="clientType != null">
+				#{clientType},
+			</if>
+			<if test="logType != null">
+				#{logType},
+			</if>
+			<if test="systemVersion != null">
+				#{systemVersion},
+			</if>
+			
+			<if test="operaResult != null">
+				#{operaResult},
+			</if>
+			<if test="exceptionMsg != null">
+				#{exceptionMsg},
+			</if>
+			<if test="exceptionType != null">
+				#{exceptionType},
+			</if>
+			<if test="requestParams != null">
+				#{requestParams},
+			</if>
+			<if test="sessionId != null">
+				#{sessionId},
+			</if>
+			<if test="createdDt != null">
+				#{createdDt},
+			</if>
+			<if test="createdUserId != null">
+				#{createdUserId},
+			</if>
+		</trim>
+	</insert>
+
+	<insert id="saveUrl" parameterType="pd">
+		insert into sys_log_url
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				ID,
+			</if>
+			<if test="url != null">
+				URL,
+			</if>
+			<if test="descript != null">
+				DESCRIPT,
+			</if>
+			<if test="createdDt != null">
+				CREATED_DT,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				#{id},
+			</if>
+			<if test="url != null">
+				#{url},
+			</if>
+			<if test="descript != null">
+				#{descript},
+			</if>
+			<if test="createdDt != null">
+				#{createdDt},
+			</if>
+		</trim>
+	</insert>
+	
+	<select id="findUrl" parameterType="String" resultType="pd">
+		select
+			t.ID,
+			t.URL
+		from sys_log_url t
+		where t.URL = #{url}
+	</select>
+	
+	<select id="findLastTimeByUser" parameterType="pd" resultType="pd">
+		select
+			t.USER_ID,
+			t.BEGIN_TIME,
+			t.END_TIME
+		from sys_log t
+		where t.USER_ID = #{userId}
+		order by t.BEGIN_TIME desc
+		limit 1
+	</select>
+	
+</mapper>

@@ -1,0 +1,107 @@
+package com.ztessc.einvoice.task;
+
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
+import org.springframework.scheduling.Trigger;
+import org.springframework.scheduling.TriggerContext;
+import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.annotation.SchedulingConfigurer;
+import org.springframework.scheduling.config.ScheduledTaskRegistrar;
+import org.springframework.scheduling.support.CronTrigger;
+import org.springframework.stereotype.Component;
+
+import com.ztessc.einvoice.service.InvoiceService;
+import com.ztessc.einvoice.service.SysTaskService;
+import com.ztessc.einvoice.util.Const;
+import com.ztessc.einvoice.util.HmacSHA1Util;
+import com.ztessc.einvoice.util.HttpClientUtil;
+import com.ztessc.einvoice.util.PageData;
+
+@Component
+@EnableScheduling
+public class InvoiceVerificationCronTask implements SchedulingConfigurer {
+	
+	@Autowired
+	private SysTaskService sysTaskService;
+	
+	@Autowired
+	private InvoiceService invoiceService;
+	
+	@Autowired
+	private static Environment environment;
+	
+	private final String TASK_CODE = "INVOICE_VERIFICATION";
+	
+	private final String cron = "0/5 * * * * ?";
+	int i = 0;
+	private boolean enabled = false;
+
+	@Override
+	public void configureTasks(ScheduledTaskRegistrar taskRegistrar) {
+		taskRegistrar.addTriggerTask(new Runnable() {
+			@Override
+			public void run() {
+				if(enabled) {
+					i++;
+					// 任务逻辑
+					System.err.println("第"+ (i) + "次开始执行操作... " + "时间：【" + new SimpleDateFormat("yyyy-MM-dd hh:mm:ss.SSS").format(new Date()) + "】");
+					
+					String url = environment.getProperty("invoice.check.url");
+					String appId = environment.getProperty("invoice.check.appId");
+					
+					List<PageData> list = invoiceService.listInvoiceCheck();
+					for (PageData pageData : list) {
+						String checkCode = pageData.getString("checkCode");
+						String code = null;
+						if(StringUtils.isNotBlank(checkCode)){
+							code = checkCode.substring(checkCode.length()-6, checkCode.length());   //获取校验码后6位
+						}
+						pageData.put("checkCode", code);
+						Map<String,String> params = new HashMap<String, String>();
+						params.put("data", pageData.toString());
+						params.put("appId", appId);
+						params.put("sign", HmacSHA1Util.encrypt(pageData.toString()));
+						
+						String result = HttpClientUtil.post(url, params);
+						
+						invoiceService.parseInvoiceStr(result,pageData.getString("id"));
+					}
+					
+					
+				}
+			}
+		}, new Trigger() {
+			@Override
+			public Date nextExecutionTime(TriggerContext triggerContext) {
+				CronTrigger trigger = new CronTrigger(cron);
+				enabled = false;
+
+				PageData param = new PageData();
+				param.put("taskCode", TASK_CODE);
+				PageData task = sysTaskService.findByCode(param);
+				if(task != null) {
+					String intervalTime = task.getString("intervalTime");
+					// 任务触发，可修改任务的执行周期
+					if(StringUtils.isNotBlank(intervalTime)){
+						trigger = new CronTrigger(intervalTime);
+					}
+					
+					if(Const.DIC_ENABLED_TYPE_QY.equals(task.getString("enabled"))) {
+						enabled = true;
+					}
+				}
+		        
+				Date nextExec = trigger.nextExecutionTime(triggerContext);
+				return nextExec;
+			}
+		});
+	}
+}

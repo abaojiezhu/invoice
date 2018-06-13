@@ -1,0 +1,175 @@
+package com.ztessc.einvoice.filter;
+
+import java.io.IOException;
+import java.util.Collections;
+import java.util.Date;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
+import javax.servlet.Filter;
+import javax.servlet.FilterChain;
+import javax.servlet.FilterConfig;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequestWrapper;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Component;
+
+import com.ztessc.einvoice.util.Const;
+import com.ztessc.einvoice.util.DateUtil;
+import com.ztessc.einvoice.util.JwtTokenUtil;
+import com.ztessc.einvoice.util.MessageUtil;
+import com.ztessc.einvoice.util.PageData;
+
+@Component
+public class AppTokenFilter implements Filter {
+
+	//需要放行的url
+	private String[] excludePaths = new String[]{"/init/login"};
+	
+	@Override
+	public void init(FilterConfig filterConfig) throws ServletException {
+		
+	}
+
+	@Override
+	public void doFilter(ServletRequest req, ServletResponse res,
+			FilterChain chain) throws IOException, ServletException {
+		HttpServletRequest request = (HttpServletRequest) req;
+        HttpServletResponse response = (HttpServletResponse) res;
+        response.setContentType("application/json; charset=utf-8");
+        
+		try {
+			String url = request.getRequestURI();
+			if(url.startsWith("/app/")) {
+				//判断该url是否需要放行
+				boolean bool = this.include(url);
+				if(bool) {
+					chain.doFilter(request, response);
+					return ;
+				}
+				
+				String token = request.getHeader("Authorization");
+System.out.println("token--------" + token);
+
+				//token为空，非法请求
+				if(StringUtils.isBlank(token)){
+			        response.getWriter().append(MessageUtil.getErrorMessage("非法请求").toString());
+			        return ;
+				}
+				
+				//校验jwt token, 0=正确，1=token过期，2=错误
+				int result = JwtTokenUtil.verify(token);
+				if(result == 0) {
+					chain.doFilter(request, response);
+					return ;
+				}else if(result == 1) {
+					PageData payload = JwtTokenUtil.getPayload(token);
+					
+					//过期时间
+					long expTime = Long.parseLong(payload.getString("exp")) * 1000L;
+					//免登录时间
+					long rememberTime = Long.parseLong(payload.getString("rememberTime"));
+System.out.println("过期时间---" + DateUtil.getDateTime(new Date(expTime)));
+System.out.println("免登录时间---" + DateUtil.getDateTime(new Date(rememberTime)));
+					//当前时间
+					long currTime = System.currentTimeMillis();
+					//如果当前时间 > 过期时间 && <= 免登录时间，则重新生成jwt
+					if(currTime > expTime && currTime <= rememberTime) {
+
+						String newToken = JwtTokenUtil.refreshToken(token);
+						//返回给客户端刷新的token
+						response.setHeader("Authorization", newToken);
+						
+						// 允许所有域进行访问
+						response.setHeader("Access-Control-Allow-Origin", "*");
+						response.setHeader("Access-Control-Expose-Headers", "Authorization");
+						response.setHeader("Cache-Control", "no-store");
+						
+						//修改request header 中 Authorization的值，否则controller中request取到的Authorization还是旧的
+						CustomeizedRequest myRequest = new CustomeizedRequest(request);
+						myRequest.putHeader("Authorization", newToken);
+						chain.doFilter(myRequest, response);
+						return ;
+					}else {
+				        response.getWriter().append(MessageUtil.getErrorMessage("帐号已失效，请重新登录",Const.ERROR_CODE_UNLOGIN).toString());
+				        return ;
+					}
+				}else if(result == 2) {
+			        response.getWriter().append(MessageUtil.getErrorMessage("token验证失败").toString());
+			        return ;
+				}
+			}
+			chain.doFilter(request, response);
+		} catch (Exception e) {
+			e.printStackTrace();
+	        response.getWriter().append(MessageUtil.getErrorMessage("系统异常").toString());
+		}
+	}
+
+	@Override
+	public void destroy() {
+		
+	}
+	
+	public boolean include(String url) {
+		for (String exclude : excludePaths) {
+			if (url.endsWith(exclude)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private class CustomeizedRequest extends HttpServletRequestWrapper {
+
+		private final Map<String, String> customHeaders;
+
+		public CustomeizedRequest(HttpServletRequest request) {
+			super(request);
+			this.customHeaders = new HashMap<>();
+		}
+
+		public void putHeader(String name, String value) {
+			this.customHeaders.put(name, value);
+		}
+
+		@Override
+		public String getHeader(String name) {
+			// check the custom headers first
+			String headerValue = customHeaders.get(name);
+
+			if (headerValue != null) {
+				return headerValue;
+			}
+			// else return from into the original wrapped object
+			return ((HttpServletRequest) getRequest()).getHeader(name);
+		}
+
+		@Override
+		public Enumeration<String> getHeaderNames() {
+			// create a set of the custom header names
+			Set<String> set = new HashSet<>(customHeaders.keySet());
+
+			// now add the headers from the wrapped request object
+			Enumeration<String> e = ((HttpServletRequest) getRequest())
+					.getHeaderNames();
+			while (e.hasMoreElements()) {
+				// add the names of the request headers into the list
+				String n = e.nextElement();
+				set.add(n);
+			}
+
+			// create an enumeration from the set and return
+			return Collections.enumeration(set);
+		}
+
+	}
+}

@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="SysTaskMapper">
+
+	<select id="listSysTasks" parameterType="pd" resultType="pd">
+		select t.ID,t.TASK_NO,t.TASK_NAME,t.LAST_RUN_TIME,t.LAST_END_TIME,t.RUN_RESULT,t.ENABLED,t.UPDATED_DT,
+		t.PLAN_START_TIME,t.PLAN_END_TIME,RUN_TYPE,
+		(select bu.USER_NAME from base_user bu where bu.ID  = t.UPDATED_USER_ID ) UPDATED_USER ,
+		(select sd.DIC_VALUE from sys_dictionary sd where sd.DIC_KEY = t.ENABLED) as ENABLED_VALUE,
+		(select sd.DIC_VALUE from sys_dictionary sd where sd.DIC_KEY = t.RUN_RESULT) as RUN_RESULT_VALUE,
+		t.INTERVAL_TIME
+		from sys_task t
+		<where>
+			<if test="taskNo != null">
+			    and t.TASK_NO like  CONCAT('%',#{taskNo},'%')
+			</if>
+			<if test="enabled != null">
+				and t.ENABLED = #{enabled}
+			</if>
+			<if test="updatedStartDt != null">
+				and t.UPDATED_DT  <![CDATA[ >= ]]> #{updatedStartDt}
+			</if>
+			<if test="updatedEndDt != null">
+				and t.UPDATED_DT <![CDATA[ <= ]]> #{updatedEndDt}
+			</if>
+			
+		</where>
+	</select>
+	
+	
+	<select id="findByCode" parameterType="pd" resultType="pd">
+		select
+			t.ID,t.TASK_NO,t.TASK_NAME,t.LAST_RUN_TIME,t.RUN_RESULT,t.ENABLED,t.CREATED_DT,t.INTERVAL_TIME,t.PLAN_START_TIME,t.PLAN_END_TIME
+		from sys_task t
+		where t.TASK_CODE = #{taskCode}
+	</select>
+
+    
+	<update id="update" parameterType="pd">
+		update sys_task t
+		<set>
+			<if test="taskNo != null" >
+				t.TASK_NO =  #{taskNo},
+			</if>
+			<if test="taskName != null" >
+				t.TASK_NAME =  #{taskName},
+			</if>
+			<if test="lastRunTime != null" >
+				t.LAST_RUN_TIME =  #{lastRunTime},
+			</if>
+			<if test="lastEndTime != null" >
+				t.LAST_END_TIME =  #{lastEndTime},
+			</if>
+			<if test="intervalTime != null" >
+				t.INTERVAL_TIME = #{intervalTime},
+			</if>
+			<if test="updatedUserId != null" >
+				t.UPDATED_USER_ID = #{updatedUserId},
+			</if>
+			<if test="runType != null" >
+				t.RUN_TYPE = #{runType},
+			</if>
+			<if test="enabled != null" >
+				t.ENABLED = #{enabled},
+			</if>
+			<if test="runResult != null" >
+				t.RUN_RESULT = #{runResult},
+			</if>
+			<if test="planStartTime != null" >
+				t.PLAN_START_TIME = #{planStartTime},
+			</if>
+			<if test="planEndTime != null" >
+				t.PLAN_END_TIME = #{planEndTime},
+			</if>
+			<if test="updatedDt != null" >
+				t.UPDATED_DT = #{updatedDt}
+			</if>
+			
+		</set>
+		where t.ID = #{id}
+	</update>
+	
+	
+
+	
+
+</mapper>

@@ -1,0 +1,78 @@
+server:
+  #服务器端口
+  port: 8080
+  #设置cookie httpOnly为true,防止js脚本读取cookie信息
+  session:
+    cookie:
+      http-only: true
+spring:
+  #数据源配置
+  datasource:
+    url: jdbc:mysql://localhost:3306/invoice
+    username: hrcloud
+    password: hrcloud
+    type: com.alibaba.druid.pool.DruidDataSource
+    driver-class-name: com.mysql.jdbc.Driver
+    filters: stat
+    maxActive: 20
+    initialSize: 1
+    maxWait: 60000
+    minIdle: 1
+    timeBetweenEvictionRunsMillis: 60000
+    minEvictableIdleTimeMillis: 300000
+    validationQuery: select 'x'
+    testWhileIdle: true
+    testOnBorrow: false
+    testOnReturn: false
+    poolPreparedStatements: true
+    maxOpenPreparedStatements: 20
+  #文件上传配置
+  http:
+    multipart:
+      #是否开启文件上传支持，默认为true
+      enabled: true
+      #单个文件上传最大值
+      max-file-size: 10MB
+      #指定每次请求的最大值
+      max-request-size: 10MB
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8
+  #redis配置
+  redis:
+    host: 127.0.0.1
+    port: 6379
+    password: root
+    pool:
+      max-active: 8
+      max-wait: -1
+      max-idle: 8
+      min-idle: 0
+    timeout: 0
+mybatis:
+  config-location: classpath:mybatis/mybatis-config.xml
+  mapper-locations: classpath:mybatis/mapper/*.xml
+pagehelper:
+  helperDialect: mysql
+  reasonable: false
+  supportMethodsArguments: true
+  params: count=countSql
+file:
+  upload:
+    root: /data/fileroot
+    location: /download
+weixin:
+  appid: wxbb5855fc7db7a0f6
+  secret: 924d38e9f21e32f94bd7478117c32425
+  h5:
+    appid: wx6a57c8aec55498b3
+    secret: 35f016b5610a597eb78bd5521d7670b6
+#发票查验配置
+invoice:
+  check:
+    url: http://192.168.1.132:8081/api/invoice/check
+    appId: c6ebaffd99cd49a184dadad6e46ccb09
+    encryptKey: MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAKRcJx8Ep0DPqBDfKawdwnt5im0Q7k+HPYJs6rOr4xZJLyz+MNxPfA601RzNwhVTlmJjfr1S5RCdmGvhbgG4SGUCAwEAAQ==
+app:
+  #app单设备登录配置，true=只允许单台设备登录，false=允许多台设备同时登录
+  singleDeviceLogin: true

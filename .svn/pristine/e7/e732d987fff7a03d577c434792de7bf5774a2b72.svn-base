@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="InvoiceDetailMapper">
+
+	<select id="listDetailByInvoice" parameterType="pd" resultType="pd">
+		select
+			t.INVOICE_ID,
+			t.LINE_NUM,
+			t.GOODSERVICE_NAME,
+			t.MODEL,
+			t.UNIT,
+			t.NUMBER,
+			t.PRICE,
+			t.SUM,
+			t.TAX_RATE,
+			t.TAX,
+			t.IS_BILL_LINE
+		from invoice_detail t
+		where t.INVOICE_ID = #{id}
+	</select>
+
+	<insert id="save" parameterType="pd">
+		insert into invoice_detail
+		<trim prefix="(" suffix=")" suffixOverrides="," >
+			<if test="id != null" >
+				ID,
+			</if>
+			<if test="invoiceId != null" >
+				INVOICE_ID,
+			</if>
+			<if test="lineNum != null" >
+				LINE_NUM,
+			</if>
+			<if test="goodserviceName != null" >
+				GOODSERVICE_NAME,
+			</if>
+			<if test="model != null" >
+				MODEL,
+			</if>
+			<if test="unit != null" >
+				UNIT,
+			</if>
+			<if test="number != null" >
+				NUMBER,
+			</if>
+			<if test="price != null" >
+				PRICE,
+			</if>
+			<if test="sum != null" >
+				SUM,
+			</if>
+			<if test="taxRate != null" >
+				TAX_RATE,
+			</if>
+			<if test="tax != null" >
+				TAX,
+			</if>
+			<if test="isBillLine != null" >
+				IS_BILL_LINE,
+			</if>
+			<if test="createdDt != null" >
+				CREATED_DT,
+			</if>
+			<if test="createdUserId != null" >
+				CREATED_USER_ID,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides="," >
+			<if test="id != null" >
+				#{id},
+			</if>
+			<if test="invoiceId != null" >
+				#{invoiceId},
+			</if>
+			<if test="lineNum != null" >
+				#{lineNum},
+			</if>
+			<if test="goodserviceName != null" >
+				#{goodserviceName},
+			</if>
+			<if test="model != null" >
+				#{model},
+			</if>
+			<if test="unit != null" >
+				#{unit},
+			</if>
+			<if test="number != null" >
+				#{number},
+			</if>
+			<if test="price != null" >
+				#{price},
+			</if>
+			<if test="sum != null" >
+				#{sum},
+			</if>
+			<if test="taxRate != null" >
+				#{taxRate},
+			</if>
+			<if test="tax != null" >
+				#{tax},
+			</if>
+			<if test="isBillLine != null" >
+				#{isBillLine},
+			</if>
+			<if test="createdDt != null" >
+				#{createdDt},
+			</if>
+			<if test="createdUserId != null" >
+				#{createdUserId},
+			</if>
+		</trim>
+	</insert>
+	
+	<delete id="delete" parameterType="pd">
+		delete from invoice_detail where INVOICE_ID = #{id}
+	</delete>
+
+</mapper>

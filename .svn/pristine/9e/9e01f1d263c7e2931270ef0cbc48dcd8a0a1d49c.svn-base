@@ -1,0 +1,133 @@
+package com.ztessc.einvoice.service;
+
+import java.io.File;
+import java.util.List;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.ztessc.einvoice.dao.DaoSupport;
+import com.ztessc.einvoice.exception.BizException;
+import com.ztessc.einvoice.util.Const;
+import com.ztessc.einvoice.util.FileUtil;
+import com.ztessc.einvoice.util.PageData;
+
+/**
+ * APP轮播图配置
+ * Copyright © 2018 zte. All rights reserved.
+ * @Description: TODO
+ * @Title: AppSlideshowConfigService.java 
+ * @Prject: pl
+ * @Package: com.zte.pl.service 
+ * @ClassName: AppSlideshowConfigService 
+ * @author: 徐益森   
+ * @date: 2018年4月10日 下午8:43:01 
+ * @version: V1.0.0
+ */
+@Service
+public class AppSlideshowConfigService {
+
+	@Autowired
+	private DaoSupport daoSupport;
+	
+	/**
+	 * 获取所有数据
+	 * @author: 徐益森
+	 * @date: 2018年4月11日 下午6:16:56
+	 * @return List<PageData>
+	 */
+	public List<PageData> listSlideshowConfigs() {
+		return daoSupport.listForPageData("AppSlideshowConfigMapper.listSlideshowConfigs", null);
+	}
+	
+	/**
+	 * 获取app轮播图
+	 * @author: 徐益森
+	 * @date: 2018年4月10日 下午8:45:51
+	 * @return List<PageData>
+	 */
+	public List<PageData> listSlideshows() {
+		return daoSupport.listForPageData("AppSlideshowConfigMapper.listSlideshows", null);
+	}
+	
+	/**
+	 * 新增
+	 * @author: 徐益森
+	 * @date: 2018年4月10日 下午8:51:17
+	 * @param {"imgName":"","imgLink":"","fileName":"","realName":"","enabled":"","sort":""}
+	 * @return void
+	 */
+	@Transactional
+	public void save(PageData pd) {
+		//验证名称是否重复
+		PageData data = this.findByName(pd);
+		if(data != null && data.size() > 0) {
+			throw new BizException("图片名称不能重复");
+		}
+		pd.fillCreatedData();
+		daoSupport.save("AppSlideshowConfigMapper.save", pd);
+	}
+	
+	/**
+	 * 修改
+	 * @author: 徐益森
+	 * @date: 2018年4月10日 下午8:50:56
+	 * @param {"id":"aaa","imgName":"","imgLink":"","imgPath":"","fileName":"","realName":"","enabled":"","sort":""}
+	 * @return void
+	 */
+	@Transactional
+	public void update(PageData pd) {
+		//验证名称是否重复
+		PageData data = this.findByName(pd);
+		if(data != null && data.size() > 0) {
+			throw new BizException("图片名称不能重复");
+		}
+		pd.fillUpdatedData();
+		daoSupport.update("AppSlideshowConfigMapper.update", pd);
+	}
+	
+	/**
+	 * 删除
+	 * @author: 徐益森
+	 * @date: 2018年4月10日 下午8:54:19
+	 * @param {"id":"aaa"}
+	 * @return void
+	 */
+	@Transactional
+	public void delete(PageData pd) {
+		PageData data = this.findById(pd);
+		if(data == null) {
+			throw new BizException("数据不存在或已删除");
+		}
+		if(Const.DIC_ENABLED_TYPE_QY.equals(data.getString("enabled"))) {
+			throw new BizException("不能删除已启用的记录");
+		}
+		//删除文件
+		if(StringUtils.isNotBlank(data.getString("fileName"))) {
+			String fileName = data.getString("fileName").substring(data.getString("fileName").lastIndexOf("/") + 1);
+			String path = FileUtil.getUploadPath("slideshow") + fileName;
+			File file = new File(path);
+			if(file.exists()) {
+				file.delete();
+			}
+		}
+		daoSupport.delete("AppSlideshowConfigMapper.delete", pd);
+	}
+	
+	/**
+	 * @param {"id":"aaa"}
+	 */
+	private PageData findById(PageData pd) {
+		return daoSupport.findForPageData("AppSlideshowConfigMapper.findById", pd);
+	}
+	
+	/**
+	 * @param {"imgName":"aaa"}
+	 */
+	private PageData findByName(PageData pd) {
+		return daoSupport.findForPageData("AppSlideshowConfigMapper.findByName", pd);
+	}
+	
+}

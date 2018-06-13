@@ -1,0 +1,256 @@
+
+delete from sys_dictionary;
+-- 状态 启用/停用
+INSERT INTO sys_dictionary(DIC_KEY,DIC_VALUE,PARENT_KEY,SORT,CREATED_USER_ID,CREATED_DT) VALUES ('Z001000','状态','0',1000,'admin',CURRENT_TIMESTAMP());
+INSERT INTO sys_dictionary(DIC_KEY,DIC_VALUE,PARENT_KEY,SORT,CREATED_USER_ID,CREATED_DT) VALUES ('Z001001','启用','Z001000',1001,'admin',CURRENT_TIMESTAMP());
+INSERT INTO sys_dictionary(DIC_KEY,DIC_VALUE,PARENT_KEY,SORT,CREATED_USER_ID,CREATED_DT) VALUES ('Z001002','停用','Z001000',1002,'admin',CURRENT_TIMESTAMP());
+
+-- 验证状态 未验证/已验证/验证失败
+INSERT INTO sys_dictionary(DIC_KEY,DIC_VALUE,PARENT_KEY,SORT,CREATED_USER_ID,CREATED_DT) VALUES ('Z002000','验证状态','0',2000,'admin',CURRENT_TIMESTAMP());
+INSERT INTO sys_dictionary(DIC_KEY,DIC_VALUE,PARENT_KEY,SORT,CREATED_USER_ID,CREATED_DT) VALUES ('Z002001','未验证','Z002000',2001,'admin',CURRENT_TIMESTAMP());
+INSERT INTO sys_dictionary(DIC_KEY,DIC_VALUE,PARENT_KEY,SORT,CREATED_USER_ID,CREATED_DT) VALUES ('Z002002','已验证','Z002000',2002,'admin',CURRENT_TIMESTAMP());
+INSERT INTO sys_dictionary(DIC_KEY,DIC_VALUE,PARENT_KEY,SORT,CREATED_USER_ID,CREATED_DT) VALUES ('Z002003','验证失败','Z002000',2003,'admin',CURRENT_TIMESTAMP());
+
+-- 发票来源 PDF上传/微信卡包获取/手工录入
+INSERT INTO sys_dictionary(DIC_KEY,DIC_VALUE,PARENT_KEY,SORT,CREATED_USER_ID,CREATED_DT) VALUES ('Z003000','发票来源','0',3000,'admin',CURRENT_TIMESTAMP());
+INSERT INTO sys_dictionary(DIC_KEY,DIC_VALUE,PARENT_KEY,SORT,CREATED_USER_ID,CREATED_DT) VALUES ('Z003001','PDF上传', 'Z003000',3001,'admin',CURRENT_TIMESTAMP());
+INSERT INTO sys_dictionary(DIC_KEY,DIC_VALUE,PARENT_KEY,SORT,CREATED_USER_ID,CREATED_DT) VALUES ('Z003002','微信卡包获取', 'Z003000',3002,'admin',CURRENT_TIMESTAMP());
+INSERT INTO sys_dictionary(DIC_KEY,DIC_VALUE,PARENT_KEY,SORT,CREATED_USER_ID,CREATED_DT) VALUES ('Z003003','手工录入','Z003000',3003,'admin',CURRENT_TIMESTAMP());
+
+-- 客户端类型(web,android,ios)
+INSERT INTO sys_dictionary(DIC_KEY,DIC_VALUE,PARENT_KEY,SORT,CREATED_USER_ID,CREATED_DT) VALUES ('Z004000','客户端类型','0',4000,'admin',CURRENT_TIMESTAMP());
+INSERT INTO sys_dictionary(DIC_KEY,DIC_VALUE,PARENT_KEY,SORT,CREATED_USER_ID,CREATED_DT) VALUES ('Z004001','web', 'Z004000',4001,'admin',CURRENT_TIMESTAMP());
+INSERT INTO sys_dictionary(DIC_KEY,DIC_VALUE,PARENT_KEY,SORT,CREATED_USER_ID,CREATED_DT) VALUES ('Z004002','ANDROID', 'Z004000',4002,'admin',CURRENT_TIMESTAMP());
+INSERT INTO sys_dictionary(DIC_KEY,DIC_VALUE,PARENT_KEY,SORT,CREATED_USER_ID,CREATED_DT) VALUES ('Z004003','IOS','Z004000',4003,'admin',CURRENT_TIMESTAMP());
+
+-- 日志类型（登陆日志，操作日志）
+INSERT INTO sys_dictionary(DIC_KEY,DIC_VALUE,PARENT_KEY,SORT,CREATED_USER_ID,CREATED_DT) VALUES ('Z005000','日志类型','0',5000,'admin',CURRENT_TIMESTAMP());
+INSERT INTO sys_dictionary(DIC_KEY,DIC_VALUE,PARENT_KEY,SORT,CREATED_USER_ID,CREATED_DT) VALUES ('Z005001','登陆日志', 'Z005000',5001,'admin',CURRENT_TIMESTAMP());
+INSERT INTO sys_dictionary(DIC_KEY,DIC_VALUE,PARENT_KEY,SORT,CREATED_USER_ID,CREATED_DT) VALUES ('Z005002','操作日志', 'Z005000',5002,'admin',CURRENT_TIMESTAMP());
+
+-- 操作结果(成功，失败)
+INSERT INTO sys_dictionary(DIC_KEY,DIC_VALUE,PARENT_KEY,SORT,CREATED_USER_ID,CREATED_DT) VALUES ('Z006000','操作结果','0',6000,'admin',CURRENT_TIMESTAMP());
+INSERT INTO sys_dictionary(DIC_KEY,DIC_VALUE,PARENT_KEY,SORT,CREATED_USER_ID,CREATED_DT) VALUES ('Z006001','成功', 'Z006000',6001,'admin',CURRENT_TIMESTAMP());
+INSERT INTO sys_dictionary(DIC_KEY,DIC_VALUE,PARENT_KEY,SORT,CREATED_USER_ID,CREATED_DT) VALUES ('Z006002','失败', 'Z006000',6002,'admin',CURRENT_TIMESTAMP());
+
+-- 异常类型(系统异常，业务异常)
+INSERT INTO sys_dictionary(DIC_KEY,DIC_VALUE,PARENT_KEY,SORT,CREATED_USER_ID,CREATED_DT) VALUES ('Z007000','异常类型','0',7000,'admin',CURRENT_TIMESTAMP());
+INSERT INTO sys_dictionary(DIC_KEY,DIC_VALUE,PARENT_KEY,SORT,CREATED_USER_ID,CREATED_DT) VALUES ('Z007001','系统异常', 'Z007000',7001,'admin',CURRENT_TIMESTAMP());
+INSERT INTO sys_dictionary(DIC_KEY,DIC_VALUE,PARENT_KEY,SORT,CREATED_USER_ID,CREATED_DT) VALUES ('Z007002','业务异常', 'Z007000',7002,'admin',CURRENT_TIMESTAMP());
+
+-- 运行状态(执行中，未执行)
+INSERT INTO sys_dictionary(DIC_KEY,DIC_VALUE,PARENT_KEY,SORT,CREATED_USER_ID,CREATED_DT) VALUES ('Z008000','运行状态','0',8000,'admin',CURRENT_TIMESTAMP());
+INSERT INTO sys_dictionary(DIC_KEY,DIC_VALUE,PARENT_KEY,SORT,CREATED_USER_ID,CREATED_DT) VALUES ('Z008001','执行中', 'Z008000',8001,'admin',CURRENT_TIMESTAMP());
+INSERT INTO sys_dictionary(DIC_KEY,DIC_VALUE,PARENT_KEY,SORT,CREATED_USER_ID,CREATED_DT) VALUES ('Z008002','未执行', 'Z008000',8002,'admin',CURRENT_TIMESTAMP());
+
+-- 运行类型(立即运行，计划执行)
+INSERT INTO sys_dictionary(DIC_KEY,DIC_VALUE,PARENT_KEY,SORT,CREATED_USER_ID,CREATED_DT) VALUES ('Z009000','运行类型','0',9000,'admin',CURRENT_TIMESTAMP());
+INSERT INTO sys_dictionary(DIC_KEY,DIC_VALUE,PARENT_KEY,SORT,CREATED_USER_ID,CREATED_DT) VALUES ('Z009001','立即运行', 'Z009000',9001,'admin',CURRENT_TIMESTAMP());
+INSERT INTO sys_dictionary(DIC_KEY,DIC_VALUE,PARENT_KEY,SORT,CREATED_USER_ID,CREATED_DT) VALUES ('Z009002','计划执行', 'Z009000',9002,'admin',CURRENT_TIMESTAMP());
+
+-- 运行结果(成功，失败)
+INSERT INTO sys_dictionary(DIC_KEY,DIC_VALUE,PARENT_KEY,SORT,CREATED_USER_ID,CREATED_DT) VALUES ('Z010000','运行结果','0',10000,'admin',CURRENT_TIMESTAMP());
+INSERT INTO sys_dictionary(DIC_KEY,DIC_VALUE,PARENT_KEY,SORT,CREATED_USER_ID,CREATED_DT) VALUES ('Z010001','成功', 'Z010000',10001,'admin',CURRENT_TIMESTAMP());
+INSERT INTO sys_dictionary(DIC_KEY,DIC_VALUE,PARENT_KEY,SORT,CREATED_USER_ID,CREATED_DT) VALUES ('Z010002','失败', 'Z010000',10002,'admin',CURRENT_TIMESTAMP());
+
+-- 菜单类型（菜单，按钮）
+INSERT INTO sys_dictionary(DIC_KEY,DIC_VALUE,PARENT_KEY,SORT,CREATED_USER_ID,CREATED_DT) VALUES ('Z011000','菜单类型','0',11000,'admin',CURRENT_TIMESTAMP());
+INSERT INTO sys_dictionary(DIC_KEY,DIC_VALUE,PARENT_KEY,SORT,CREATED_USER_ID,CREATED_DT) VALUES ('Z011001','菜单', 'Z011000',11001,'admin',CURRENT_TIMESTAMP());
+INSERT INTO sys_dictionary(DIC_KEY,DIC_VALUE,PARENT_KEY,SORT,CREATED_USER_ID,CREATED_DT) VALUES ('Z011002','按钮', 'Z011000',11002,'admin',CURRENT_TIMESTAMP());
+
+
+delete from sys_func;
+-- 功能菜单初始化数据
+INSERT INTO `sys_func`(ID,FUNC_CODE,FUNC_NAME,FUNC_URL,FUNC_TYPE,PARENT_ID,TYPE_LEVEL,SORT,CREATED_DT,CREATED_USER_ID)
+VALUES (replace(UUID(),'-',''), 'E_INVOICE_SYSTEM', 'E票联管理系统', null,null, null, 0, 0, sysdate(), 'admin');
+
+INSERT INTO `sys_func`(ID,FUNC_CODE,FUNC_NAME,FUNC_URL,FUNC_TYPE,PARENT_ID,TYPE_LEVEL,SORT,CREATED_DT,CREATED_USER_ID)
+VALUES (replace(UUID(),'-',''), 'APP_MENU_AUTHORITY', 'APP菜单权限', null,null, (select ID from (select * from sys_func) t where FUNC_CODE = 'E_INVOICE_SYSTEM'), 1, 1, sysdate(), 'admin');
+INSERT INTO `sys_func`(ID,FUNC_CODE,FUNC_NAME,FUNC_URL,FUNC_TYPE,PARENT_ID,TYPE_LEVEL,SORT,CREATED_DT,CREATED_USER_ID)
+VALUES (replace(UUID(),'-',''), 'APP_HOMEPAGE', '首页-扫描', NULL,NULL, (select ID from (select * from sys_func) t where FUNC_CODE = 'APP_MENU_AUTHORITY'), 2, 2, sysdate(), 'admin');
+INSERT INTO `sys_func`(ID,FUNC_CODE,FUNC_NAME,FUNC_URL,FUNC_TYPE,PARENT_ID,TYPE_LEVEL,SORT,CREATED_DT,CREATED_USER_ID)
+VALUES (replace(UUID(),'-',''), 'APP_INVOICE_SCANNING', '发票扫描', NULL,NULL, (select ID from (select * from sys_func) t where FUNC_CODE = 'APP_HOMEPAGE'), 3, 21, sysdate(), 'admin');
+INSERT INTO `sys_func`(ID,FUNC_CODE,FUNC_NAME,FUNC_URL,FUNC_TYPE,PARENT_ID,TYPE_LEVEL,SORT,CREATED_DT,CREATED_USER_ID)
+VALUES (replace(UUID(),'-',''), 'APP_INVOICE_SCANNING_RESULT', '发票扫描结果', NULL,NULL, (select ID from (select * from sys_func) t where FUNC_CODE = 'APP_INVOICE_SCANNING'), 4, 211, sysdate(), 'admin');
+INSERT INTO `sys_func`(ID,FUNC_CODE,FUNC_NAME,FUNC_URL,FUNC_TYPE,PARENT_ID,TYPE_LEVEL,SORT,CREATED_DT,CREATED_USER_ID)
+VALUES (replace(UUID(),'-',''), 'APP_MANUA_INPUT', '手动输入', NULL,NULL, (select ID from (select * from sys_func) t where FUNC_CODE = 'APP_HOMEPAGE'), 3, 22, sysdate(), 'admin');
+INSERT INTO `sys_func`(ID,FUNC_CODE,FUNC_NAME,FUNC_URL,FUNC_TYPE,PARENT_ID,TYPE_LEVEL,SORT,CREATED_DT,CREATED_USER_ID)
+VALUES (replace(UUID(),'-',''), 'APP_PDF_UPLOAD', 'pdf上传', NULL,NULL, (select ID from (select * from sys_func) t where FUNC_CODE = 'APP_HOMEPAGE'), 3, 23, sysdate(), 'admin');
+INSERT INTO `sys_func`(ID,FUNC_CODE,FUNC_NAME,FUNC_URL,FUNC_TYPE,PARENT_ID,TYPE_LEVEL,SORT,CREATED_DT,CREATED_USER_ID)
+VALUES (replace(UUID(),'-',''), 'APP_SINGLE_UPLOAD', '单个上传', NULL,NULL, (select ID from (select * from sys_func) t where FUNC_CODE = 'APP_PDF_UPLOAD'), 4, 221, sysdate(), 'admin');
+INSERT INTO `sys_func`(ID,FUNC_CODE,FUNC_NAME,FUNC_URL,FUNC_TYPE,PARENT_ID,TYPE_LEVEL,SORT,CREATED_DT,CREATED_USER_ID)
+VALUES (replace(UUID(),'-',''), 'APP_UPLOAD_RESULT', '上传结果', NULL,NULL, (select ID from (select * from sys_func) t where FUNC_CODE = 'APP_PDF_UPLOAD'), 4, 222, sysdate(), 'admin');
+INSERT INTO `sys_func`(ID,FUNC_CODE,FUNC_NAME,FUNC_URL,FUNC_TYPE,PARENT_ID,TYPE_LEVEL,SORT,CREATED_DT,CREATED_USER_ID)
+VALUES (replace(UUID(),'-',''), 'APP_GAIN_INVOICE', '获取发票', NULL,NULL, (select ID from (select * from sys_func) t where FUNC_CODE = 'APP_MENU_AUTHORITY'), 2, 3, sysdate(), 'admin');
+INSERT INTO `sys_func`(ID,FUNC_CODE,FUNC_NAME,FUNC_URL,FUNC_TYPE,PARENT_ID,TYPE_LEVEL,SORT,CREATED_DT,CREATED_USER_ID)
+VALUES (replace(UUID(),'-',''), 'APP_QUERY_INVOICE', '发票查询', NULL,NULL, (select ID from (select * from sys_func) t where FUNC_CODE = 'APP_MENU_AUTHORITY'), 2, 4, sysdate(), 'admin');
+INSERT INTO `sys_func`(ID,FUNC_CODE,FUNC_NAME,FUNC_URL,FUNC_TYPE,PARENT_ID,TYPE_LEVEL,SORT,CREATED_DT,CREATED_USER_ID)
+VALUES (replace(UUID(),'-',''), 'APP_INVOICE_DETAILS', '发票详情', NULL,NULL, (select ID from (select * from sys_func) t where FUNC_CODE = 'APP_QUERY_INVOICE'), 3, 31, sysdate(), 'admin');
+INSERT INTO `sys_func`(ID,FUNC_CODE,FUNC_NAME,FUNC_URL,FUNC_TYPE,PARENT_ID,TYPE_LEVEL,SORT,CREATED_DT,CREATED_USER_ID)
+VALUES (replace(UUID(),'-',''), 'APP_INVOICE_FILE', '发票文件', NULL,NULL, (select ID from (select * from sys_func) t where FUNC_CODE = 'APP_INVOICE_DETAILS'), 4, 311, sysdate(), 'admin');
+INSERT INTO `sys_func`(ID,FUNC_CODE,FUNC_NAME,FUNC_URL,FUNC_TYPE,PARENT_ID,TYPE_LEVEL,SORT,CREATED_DT,CREATED_USER_ID)
+VALUES (replace(UUID(),'-',''), 'APP_SEND_COLLEAGUE', '发送给同事', '',NULL, (select ID from (select * from sys_func) t where FUNC_CODE = 'APP_INVOICE_DETAILS'), 4, 312, sysdate(), 'admin');
+INSERT INTO `sys_func`(ID,FUNC_CODE,FUNC_NAME,FUNC_URL,FUNC_TYPE,PARENT_ID,TYPE_LEVEL,SORT,CREATED_DT,CREATED_USER_ID)
+VALUES (replace(UUID(),'-',''), 'APP_MINE', '我的', NULL,NULL, (select ID from (select * from sys_func) t where FUNC_CODE = 'APP_MENU_AUTHORITY'), 2, 5, sysdate(), 'admin');
+INSERT INTO `sys_func`(ID,FUNC_CODE,FUNC_NAME,FUNC_URL,FUNC_TYPE,PARENT_ID,TYPE_LEVEL,SORT,CREATED_DT,CREATED_USER_ID)
+VALUES (replace(UUID(),'-',''), 'APP_INVOICE_RAISED', '发票抬头', NULL,NULL, (select ID from (select * from sys_func) t where FUNC_CODE = 'APP_MINE'), 3, 41, sysdate(), 'admin');
+INSERT INTO `sys_func`(ID,FUNC_CODE,FUNC_NAME,FUNC_URL,FUNC_TYPE,PARENT_ID,TYPE_LEVEL,SORT,CREATED_DT,CREATED_USER_ID)
+VALUES (replace(UUID(),'-',''), 'APP_RAISED_DETAILS', '抬头详情', NULL,NULL, (select ID from (select * from sys_func) t where FUNC_CODE = 'APP_INVOICE_RAISED'), 4, 421, sysdate(), 'admin');
+INSERT INTO `sys_func`(ID,FUNC_CODE,FUNC_NAME,FUNC_URL,FUNC_TYPE,PARENT_ID,TYPE_LEVEL,SORT,CREATED_DT,CREATED_USER_ID)
+VALUES (replace(UUID(),'-',''), 'APP_EDIT_RAISED', '编辑抬头', NULL,NULL, (select ID from (select * from sys_func) t where FUNC_CODE = 'APP_RAISED_DETAILS'), 5, 4111, sysdate(), 'admin');
+INSERT INTO `sys_func`(ID,FUNC_CODE,FUNC_NAME,FUNC_URL,FUNC_TYPE,PARENT_ID,TYPE_LEVEL,SORT,CREATED_DT,CREATED_USER_ID)
+VALUES (replace(UUID(),'-',''), 'ADD_RAISED', '新增抬头', NULL,NULL, (select ID from (select * from sys_func) t where FUNC_CODE = 'APP_INVOICE_RAISED'), 4, 422, sysdate(), 'admin');
+INSERT INTO `sys_func`(ID,FUNC_CODE,FUNC_NAME,FUNC_URL,FUNC_TYPE,PARENT_ID,TYPE_LEVEL,SORT,CREATED_DT,CREATED_USER_ID)
+VALUES (replace(UUID(),'-',''), 'APP_SKIN_SETTING', '皮肤设置', NULL,NULL, (select ID from (select * from sys_func) t where FUNC_CODE = 'APP_MINE'), 3, 42, sysdate(), 'admin');
+INSERT INTO `sys_func`(ID,FUNC_CODE,FUNC_NAME,FUNC_URL,FUNC_TYPE,PARENT_ID,TYPE_LEVEL,SORT,CREATED_DT,CREATED_USER_ID)
+VALUES (replace(UUID(),'-',''), 'APP_ABOUTUS', '关于我们', NULL,NULL, (select ID from (select * from sys_func) t where FUNC_CODE = 'APP_MINE'), 3, 43, sysdate(), 'admin');
+
+INSERT INTO `sys_func`(ID,FUNC_CODE,FUNC_NAME,FUNC_URL,FUNC_TYPE,PARENT_ID,TYPE_LEVEL,SORT,CREATED_DT,CREATED_USER_ID)
+VALUES (replace(UUID(),'-',''), 'BACKSTAGE_MANAGE_AUTHORITY', '后台管理权限', null,NULL, (select ID from (select * from sys_func) t where FUNC_CODE = 'E_INVOICE_SYSTEM'), 1, 1, sysdate(), 'admin');
+INSERT INTO `sys_func`(ID,FUNC_CODE,FUNC_NAME,FUNC_URL,FUNC_TYPE,PARENT_ID,TYPE_LEVEL,SORT,CREATED_DT,CREATED_USER_ID)
+VALUES (replace(UUID(),'-',''), 'INVOICE_MANAGE', '发票管理', NULL,'Z011001', (select ID from (select * from sys_func) t where FUNC_CODE = 'BACKSTAGE_MANAGE_AUTHORITY'), 2, 2, sysdate(), 'admin');
+INSERT INTO `sys_func`(ID,FUNC_CODE,FUNC_NAME,FUNC_URL,FUNC_TYPE,PARENT_ID,TYPE_LEVEL,SORT,CREATED_DT,CREATED_USER_ID)
+VALUES (replace(UUID(),'-',''), 'INVOICE_SEARCH', '发票查询', NULL,'Z011001', (select ID from (select * from sys_func) t where FUNC_CODE = 'INVOICE_MANAGE'), 3, 21, sysdate(), 'admin');
+INSERT INTO `sys_func`(ID,FUNC_CODE,FUNC_NAME,FUNC_URL,FUNC_TYPE,PARENT_ID,TYPE_LEVEL,SORT,CREATED_DT,CREATED_USER_ID)
+VALUES (replace(UUID(),'-',''), 'APPLICATION_MANAGE', '应用管理', NULL,'Z011001', (select ID from (select * from sys_func) t where FUNC_CODE = 'BACKSTAGE_MANAGE_AUTHORITY'), 2, 3, sysdate(), 'admin');
+INSERT INTO `sys_func`(ID,FUNC_CODE,FUNC_NAME,FUNC_URL,FUNC_TYPE,PARENT_ID,TYPE_LEVEL,SORT,CREATED_DT,CREATED_USER_ID)
+VALUES (replace(UUID(),'-',''), 'START_PAGE', '启动页', '/config/boot/list','Z011001', (select ID from (select * from sys_func) t where FUNC_CODE = 'APPLICATION_MANAGE'), 3, 31, sysdate(), 'admin');
+INSERT INTO `sys_func`(ID,FUNC_CODE,FUNC_NAME,FUNC_URL,FUNC_TYPE,PARENT_ID,TYPE_LEVEL,SORT,CREATED_DT,CREATED_USER_ID)
+VALUES (replace(UUID(),'-',''), 'HOME_CAROUSEL', '首页轮播', '/config/slideshow/list','Z011001', (select ID from (select * from sys_func) t where FUNC_CODE = 'APPLICATION_MANAGE'), 3, 32, sysdate(), 'admin');
+INSERT INTO `sys_func`(ID,FUNC_CODE,FUNC_NAME,FUNC_URL,FUNC_TYPE,PARENT_ID,TYPE_LEVEL,SORT,CREATED_DT,CREATED_USER_ID)
+VALUES (replace(UUID(),'-',''), 'LOGO_SETTING', 'LOGO设置', '/config/logo/list','Z011001', (select ID from (select * from sys_func) t where FUNC_CODE = 'APPLICATION_MANAGE'), 3, 33, sysdate(), 'admin');
+INSERT INTO `sys_func`(ID,FUNC_CODE,FUNC_NAME,FUNC_URL,FUNC_TYPE,PARENT_ID,TYPE_LEVEL,SORT,CREATED_DT,CREATED_USER_ID)
+VALUES (replace(UUID(),'-',''), 'COLUMN_SETTING', '栏目设置', '/config/button/list','Z011001', (select ID from (select * from sys_func) t where FUNC_CODE = 'APPLICATION_MANAGE'), 3, 34, sysdate(), 'admin');
+INSERT INTO `sys_func`(ID,FUNC_CODE,FUNC_NAME,FUNC_URL,FUNC_TYPE,PARENT_ID,TYPE_LEVEL,SORT,CREATED_DT,CREATED_USER_ID)
+VALUES (replace(UUID(),'-',''), 'MENU_SETTING', '菜单设置', '/config/menu/list','Z011001', (select ID from (select * from sys_func) t where FUNC_CODE = 'APPLICATION_MANAGE'), 3, 35, sysdate(), 'admin');
+INSERT INTO `sys_func`(ID,FUNC_CODE,FUNC_NAME,FUNC_URL,FUNC_TYPE,PARENT_ID,TYPE_LEVEL,SORT,CREATED_DT,CREATED_USER_ID)
+VALUES (replace(UUID(),'-',''), 'AUTHORITY_MANAGE', '权限管理', NULL,'Z011001', (select ID from (select * from sys_func) t where FUNC_CODE = 'BACKSTAGE_MANAGE_AUTHORITY'), 2, 4, sysdate(), 'admin');
+INSERT INTO `sys_func`(ID,FUNC_CODE,FUNC_NAME,FUNC_URL,FUNC_TYPE,PARENT_ID,TYPE_LEVEL,SORT,CREATED_DT,CREATED_USER_ID)
+VALUES (replace(UUID(),'-',''), 'USER_MANAGE', '用户管理', NULL,'Z011001', (select ID from (select * from sys_func) t where FUNC_CODE = 'AUTHORITY_MANAGE'), 3, 41, sysdate(), 'admin');
+INSERT INTO `sys_func`(ID,FUNC_CODE,FUNC_NAME,FUNC_URL,FUNC_TYPE,PARENT_ID,TYPE_LEVEL,SORT,CREATED_DT,CREATED_USER_ID)
+VALUES (replace(UUID(),'-',''), 'NEW_USER', '新增用户', NULL,'Z011002', (select ID from (select * from sys_func) t where FUNC_CODE = 'USER_MANAGE'), 4, 411, sysdate(), 'admin');
+INSERT INTO `sys_func`(ID,FUNC_CODE,FUNC_NAME,FUNC_URL,FUNC_TYPE,PARENT_ID,TYPE_LEVEL,SORT,CREATED_DT,CREATED_USER_ID)
+VALUES (replace(UUID(),'-',''), 'ROLE_MANAGE', '角色管理', NULL,'Z011001', (select ID from (select * from sys_func) t where FUNC_CODE = 'AUTHORITY_MANAGE'), 3, 42, sysdate(), 'admin');
+INSERT INTO `sys_func`(ID,FUNC_CODE,FUNC_NAME,FUNC_URL,FUNC_TYPE,PARENT_ID,TYPE_LEVEL,SORT,CREATED_DT,CREATED_USER_ID)
+VALUES (replace(UUID(),'-',''), 'ROLE_RESOURCES', '角色资源', '/role/listSysFunc','Z011002', (select ID from (select * from sys_func) t where FUNC_CODE = 'ROLE_MANAGE'), 4, 421, sysdate(), 'admin');
+INSERT INTO `sys_func`(ID,FUNC_CODE,FUNC_NAME,FUNC_URL,FUNC_TYPE,PARENT_ID,TYPE_LEVEL,SORT,CREATED_DT,CREATED_USER_ID)
+VALUES (replace(UUID(),'-',''), 'ROLE_MEMBERS', '角色成员', '/role/getRoleUsers','Z011002', (select ID from (select * from sys_func) t where FUNC_CODE = 'ROLE_MANAGE'), 4, 422, sysdate(), 'admin');
+INSERT INTO `sys_func`(ID,FUNC_CODE,FUNC_NAME,FUNC_URL,FUNC_TYPE,PARENT_ID,TYPE_LEVEL,SORT,CREATED_DT,CREATED_USER_ID)
+VALUES (replace(UUID(),'-',''), 'ADD_USER', '添加用户', '/role/listAddRoleUsers','Z011002', (select ID from (select * from sys_func) t where FUNC_CODE = 'ROLE_MEMBERS'), 5, 4221, sysdate(), 'admin');
+INSERT INTO `sys_func`(ID,FUNC_CODE,FUNC_NAME,FUNC_URL,FUNC_TYPE,PARENT_ID,TYPE_LEVEL,SORT,CREATED_DT,CREATED_USER_ID)
+VALUES (replace(UUID(),'-',''), 'ROLE_EDIT', '角色修改', '/role/findSysRoleById','Z011002', (select ID from (select * from sys_func) t where FUNC_CODE = 'ROLE_MANAGE'), 4, 423, sysdate(), 'admin');
+INSERT INTO `sys_func`(ID,FUNC_CODE,FUNC_NAME,FUNC_URL,FUNC_TYPE,PARENT_ID,TYPE_LEVEL,SORT,CREATED_DT,CREATED_USER_ID)
+VALUES (replace(UUID(),'-',''), 'SYSTEM_MANAGE', '系统管理', NULL,'Z011001', (select ID from (select * from sys_func) t where FUNC_CODE = 'BACKSTAGE_MANAGE_AUTHORITY'), 2, 5, sysdate(), 'admin');
+INSERT INTO `sys_func`(ID,FUNC_CODE,FUNC_NAME,FUNC_URL,FUNC_TYPE,PARENT_ID,TYPE_LEVEL,SORT,CREATED_DT,CREATED_USER_ID)
+VALUES (replace(UUID(),'-',''), 'TIME_TASK', '定时任务', '/systask/list','Z011001', (select ID from (select * from sys_func) t where FUNC_CODE = 'SYSTEM_MANAGE'), 3, 51, sysdate(), 'admin');
+INSERT INTO `sys_func`(ID,FUNC_CODE,FUNC_NAME,FUNC_URL,FUNC_TYPE,PARENT_ID,TYPE_LEVEL,SORT,CREATED_DT,CREATED_USER_ID)
+VALUES (replace(UUID(),'-',''), 'EDIT_TASK', '修改任务', '/systask/update','Z011002', (select ID from (select * from sys_func) t where FUNC_CODE = 'TIME_TASK'), 4, 511, sysdate(), 'admin');
+INSERT INTO `sys_func`(ID,FUNC_CODE,FUNC_NAME,FUNC_URL,FUNC_TYPE,PARENT_ID,TYPE_LEVEL,SORT,CREATED_DT,CREATED_USER_ID)
+VALUES (replace(UUID(),'-',''), 'LOG_MANAGE', '日志管理', NULL,'Z011001', (select ID from (select * from sys_func) t where FUNC_CODE = 'SYSTEM_MANAGE'), 3, 52, sysdate(), 'admin');
+
+
+
+delete from base_user;
+-- 初始化 系统管理员信息
+INSERT INTO `base_user`(`ID`, `ACCOUNT_NO`, `PASSWORD`, `USER_NAME`, `USER_CODE`, `MOBILE`, `EMAIL`, `ENABLED`, `CREATED_DT`, `CREATED_USER_ID`, `UPDATED_DT`, `UPDATED_USER_ID`, `REGISTER_DT`, `DISABLE_DT`)
+VALUES (replace(UUID(),'-',''), 'admin', md5('888888'), '系统管理员', NULL, NULL, NULL, 'Z001001', NULL, NULL,  sysdate(), '1',  sysdate(), NULL);
+
+delete from sys_role;
+-- 初始化角色信息
+INSERT INTO `sys_role`(`ID`, `ROLE_CODE`, `ROLE_NAME`, `REMARK`, `CREATED_DT`, `CREATED_USER_ID`, `UPDATED_DT`, `UPDATED_USER_ID`)
+VALUES (replace(UUID(),'-',''), '1001', '系统管理员', '系统管理员', sysdate(), '1', sysdate(), '1');
+
+delete from sys_role_user;
+-- 角色用户信息
+INSERT INTO `sys_role_user`(`ID`, `ROLE_ID`, `USER_ID`, `CREATED_DT`, `CREATED_USER_ID`, `UPDATED_DT`, `UPDATED_USER_ID`)
+VALUES (replace(UUID(),'-',''), (select id from sys_role where role_code = '1001'), (select id from base_user where ACCOUNT_NO = 'admin'), sysdate(), '1', sysdate(), '1');
+
+delete from sys_role_func;
+-- 所有角色资源信息
+INSERT INTO `sys_role_func`(`ID`, `ROLE_ID`, `FUNC_ID`, `CREATED_DT`, `CREATED_USER_ID`, `UPDATED_DT`, `UPDATED_USER_ID`)
+VALUES (replace(UUID(),'-',''), (select id from sys_role where role_code = '1001'), (select id from sys_func where FUNC_CODE = 'APP_MENU_AUTHORITY'), sysdate(), '1', sysdate(), '1');
+INSERT INTO `sys_role_func`(`ID`, `ROLE_ID`, `FUNC_ID`, `CREATED_DT`, `CREATED_USER_ID`, `UPDATED_DT`, `UPDATED_USER_ID`)
+VALUES (replace(UUID(),'-',''), (select id from sys_role where role_code = '1001'), (select id from sys_func where FUNC_CODE = 'APP_HOMEPAGE'), sysdate(), '1', sysdate(), '1');
+INSERT INTO `sys_role_func`(`ID`, `ROLE_ID`, `FUNC_ID`, `CREATED_DT`, `CREATED_USER_ID`, `UPDATED_DT`, `UPDATED_USER_ID`)
+VALUES (replace(UUID(),'-',''), (select id from sys_role where role_code = '1001'), (select id from sys_func where FUNC_CODE = 'APP_INVOICE_SCANNING'), sysdate(), '1', sysdate(), '1');
+INSERT INTO `sys_role_func`(`ID`, `ROLE_ID`, `FUNC_ID`, `CREATED_DT`, `CREATED_USER_ID`, `UPDATED_DT`, `UPDATED_USER_ID`)
+VALUES (replace(UUID(),'-',''), (select id from sys_role where role_code = '1001'), (select id from sys_func where FUNC_CODE = 'APP_INVOICE_SCANNING_RESULT'), sysdate(), '1', sysdate(), '1');
+INSERT INTO `sys_role_func`(`ID`, `ROLE_ID`, `FUNC_ID`, `CREATED_DT`, `CREATED_USER_ID`, `UPDATED_DT`, `UPDATED_USER_ID`)
+VALUES (replace(UUID(),'-',''), (select id from sys_role where role_code = '1001'), (select id from sys_func where FUNC_CODE = 'APP_MANUA_INPUT'), sysdate(), '1', sysdate(), '1');
+INSERT INTO `sys_role_func`(`ID`, `ROLE_ID`, `FUNC_ID`, `CREATED_DT`, `CREATED_USER_ID`, `UPDATED_DT`, `UPDATED_USER_ID`)
+VALUES (replace(UUID(),'-',''), (select id from sys_role where role_code = '1001'), (select id from sys_func where FUNC_CODE = 'APP_PDF_UPLOAD'), sysdate(), '1', sysdate(), '1');
+INSERT INTO `sys_role_func`(`ID`, `ROLE_ID`, `FUNC_ID`, `CREATED_DT`, `CREATED_USER_ID`, `UPDATED_DT`, `UPDATED_USER_ID`)
+VALUES (replace(UUID(),'-',''), (select id from sys_role where role_code = '1001'), (select id from sys_func where FUNC_CODE = 'APP_SINGLE_UPLOAD'), sysdate(), '1', sysdate(), '1');
+INSERT INTO `sys_role_func`(`ID`, `ROLE_ID`, `FUNC_ID`, `CREATED_DT`, `CREATED_USER_ID`, `UPDATED_DT`, `UPDATED_USER_ID`)
+VALUES (replace(UUID(),'-',''), (select id from sys_role where role_code = '1001'), (select id from sys_func where FUNC_CODE = 'APP_UPLOAD_RESULT'), sysdate(), '1', sysdate(), '1');
+INSERT INTO `sys_role_func`(`ID`, `ROLE_ID`, `FUNC_ID`, `CREATED_DT`, `CREATED_USER_ID`, `UPDATED_DT`, `UPDATED_USER_ID`)
+VALUES (replace(UUID(),'-',''), (select id from sys_role where role_code = '1001'), (select id from sys_func where FUNC_CODE = 'APP_GAIN_INVOICE'), sysdate(), '1', sysdate(), '1');
+INSERT INTO `sys_role_func`(`ID`, `ROLE_ID`, `FUNC_ID`, `CREATED_DT`, `CREATED_USER_ID`, `UPDATED_DT`, `UPDATED_USER_ID`)
+VALUES (replace(UUID(),'-',''), (select id from sys_role where role_code = '1001'), (select id from sys_func where FUNC_CODE = 'APP_QUERY_INVOICE'), sysdate(), '1', sysdate(), '1');
+INSERT INTO `sys_role_func`(`ID`, `ROLE_ID`, `FUNC_ID`, `CREATED_DT`, `CREATED_USER_ID`, `UPDATED_DT`, `UPDATED_USER_ID`)
+VALUES (replace(UUID(),'-',''), (select id from sys_role where role_code = '1001'), (select id from sys_func where FUNC_CODE = 'APP_INVOICE_DETAILS'), sysdate(), '1', sysdate(), '1');
+INSERT INTO `sys_role_func`(`ID`, `ROLE_ID`, `FUNC_ID`, `CREATED_DT`, `CREATED_USER_ID`, `UPDATED_DT`, `UPDATED_USER_ID`)
+VALUES (replace(UUID(),'-',''), (select id from sys_role where role_code = '1001'), (select id from sys_func where FUNC_CODE = 'APP_INVOICE_FILE'), sysdate(), '1', sysdate(), '1');
+INSERT INTO `sys_role_func`(`ID`, `ROLE_ID`, `FUNC_ID`, `CREATED_DT`, `CREATED_USER_ID`, `UPDATED_DT`, `UPDATED_USER_ID`)
+VALUES (replace(UUID(),'-',''), (select id from sys_role where role_code = '1001'), (select id from sys_func where FUNC_CODE = 'APP_SEND_COLLEAGUE'), sysdate(), '1', sysdate(), '1');
+INSERT INTO `sys_role_func`(`ID`, `ROLE_ID`, `FUNC_ID`, `CREATED_DT`, `CREATED_USER_ID`, `UPDATED_DT`, `UPDATED_USER_ID`)
+VALUES (replace(UUID(),'-',''), (select id from sys_role where role_code = '1001'), (select id from sys_func where FUNC_CODE = 'APP_MINE'), sysdate(), '1', sysdate(), '1');
+INSERT INTO `sys_role_func`(`ID`, `ROLE_ID`, `FUNC_ID`, `CREATED_DT`, `CREATED_USER_ID`, `UPDATED_DT`, `UPDATED_USER_ID`)
+VALUES (replace(UUID(),'-',''), (select id from sys_role where role_code = '1001'), (select id from sys_func where FUNC_CODE = 'APP_INVOICE_RAISED'), sysdate(), '1', sysdate(), '1');
+INSERT INTO `sys_role_func`(`ID`, `ROLE_ID`, `FUNC_ID`, `CREATED_DT`, `CREATED_USER_ID`, `UPDATED_DT`, `UPDATED_USER_ID`)
+VALUES (replace(UUID(),'-',''), (select id from sys_role where role_code = '1001'), (select id from sys_func where FUNC_CODE = 'APP_RAISED_DETAILS'), sysdate(), '1', sysdate(), '1');
+INSERT INTO `sys_role_func`(`ID`, `ROLE_ID`, `FUNC_ID`, `CREATED_DT`, `CREATED_USER_ID`, `UPDATED_DT`, `UPDATED_USER_ID`)
+VALUES (replace(UUID(),'-',''), (select id from sys_role where role_code = '1001'), (select id from sys_func where FUNC_CODE = 'APP_EDIT_RAISED'), sysdate(), '1', sysdate(), '1');
+INSERT INTO `sys_role_func`(`ID`, `ROLE_ID`, `FUNC_ID`, `CREATED_DT`, `CREATED_USER_ID`, `UPDATED_DT`, `UPDATED_USER_ID`)
+VALUES (replace(UUID(),'-',''), (select id from sys_role where role_code = '1001'), (select id from sys_func where FUNC_CODE = 'ADD_RAISED'), sysdate(), '1', sysdate(), '1');
+INSERT INTO `sys_role_func`(`ID`, `ROLE_ID`, `FUNC_ID`, `CREATED_DT`, `CREATED_USER_ID`, `UPDATED_DT`, `UPDATED_USER_ID`)
+VALUES (replace(UUID(),'-',''), (select id from sys_role where role_code = '1001'), (select id from sys_func where FUNC_CODE = 'APP_SKIN_SETTING'), sysdate(), '1', sysdate(), '1');
+INSERT INTO `sys_role_func`(`ID`, `ROLE_ID`, `FUNC_ID`, `CREATED_DT`, `CREATED_USER_ID`, `UPDATED_DT`, `UPDATED_USER_ID`)
+VALUES (replace(UUID(),'-',''), (select id from sys_role where role_code = '1001'), (select id from sys_func where FUNC_CODE = 'APP_ABOUTUS'), sysdate(), '1', sysdate(), '1');
+
+
+
+INSERT INTO `sys_role_func`(`ID`, `ROLE_ID`, `FUNC_ID`, `CREATED_DT`, `CREATED_USER_ID`, `UPDATED_DT`, `UPDATED_USER_ID`)
+VALUES (replace(UUID(),'-',''), (select id from sys_role where role_code = '1001'), (select id from sys_func where FUNC_CODE = 'BACKSTAGE_MANAGE_AUTHORITY'), sysdate(), '1', sysdate(), '1');
+INSERT INTO `sys_role_func`(`ID`, `ROLE_ID`, `FUNC_ID`, `CREATED_DT`, `CREATED_USER_ID`, `UPDATED_DT`, `UPDATED_USER_ID`)
+VALUES (replace(UUID(),'-',''), (select id from sys_role where role_code = '1001'), (select id from sys_func where FUNC_CODE = 'INVOICE_MANAGE'), sysdate(), '1', sysdate(), '1');
+INSERT INTO `sys_role_func`(`ID`, `ROLE_ID`, `FUNC_ID`, `CREATED_DT`, `CREATED_USER_ID`, `UPDATED_DT`, `UPDATED_USER_ID`)
+VALUES (replace(UUID(),'-',''), (select id from sys_role where role_code = '1001'), (select id from sys_func where FUNC_CODE = 'INVOICE_SEARCH'), sysdate(), '1', sysdate(), '1');
+INSERT INTO `sys_role_func`(`ID`, `ROLE_ID`, `FUNC_ID`, `CREATED_DT`, `CREATED_USER_ID`, `UPDATED_DT`, `UPDATED_USER_ID`)
+VALUES (replace(UUID(),'-',''), (select id from sys_role where role_code = '1001'), (select id from sys_func where FUNC_CODE = 'APPLICATION_MANAGE'), sysdate(), '1', sysdate(), '1');
+INSERT INTO `sys_role_func`(`ID`, `ROLE_ID`, `FUNC_ID`, `CREATED_DT`, `CREATED_USER_ID`, `UPDATED_DT`, `UPDATED_USER_ID`)
+VALUES (replace(UUID(),'-',''), (select id from sys_role where role_code = '1001'), (select id from sys_func where FUNC_CODE = 'START_PAGE'), sysdate(), '1', sysdate(), '1');
+INSERT INTO `sys_role_func`(`ID`, `ROLE_ID`, `FUNC_ID`, `CREATED_DT`, `CREATED_USER_ID`, `UPDATED_DT`, `UPDATED_USER_ID`)
+VALUES (replace(UUID(),'-',''), (select id from sys_role where role_code = '1001'), (select id from sys_func where FUNC_CODE = 'HOME_CAROUSEL'), sysdate(), '1', sysdate(), '1');
+INSERT INTO `sys_role_func`(`ID`, `ROLE_ID`, `FUNC_ID`, `CREATED_DT`, `CREATED_USER_ID`, `UPDATED_DT`, `UPDATED_USER_ID`)
+VALUES (replace(UUID(),'-',''), (select id from sys_role where role_code = '1001'), (select id from sys_func where FUNC_CODE = 'LOGO_SETTING'), sysdate(), '1', sysdate(), '1');
+INSERT INTO `sys_role_func`(`ID`, `ROLE_ID`, `FUNC_ID`, `CREATED_DT`, `CREATED_USER_ID`, `UPDATED_DT`, `UPDATED_USER_ID`)
+VALUES (replace(UUID(),'-',''), (select id from sys_role where role_code = '1001'), (select id from sys_func where FUNC_CODE = 'COLUMN_SETTING'), sysdate(), '1', sysdate(), '1');
+INSERT INTO `sys_role_func`(`ID`, `ROLE_ID`, `FUNC_ID`, `CREATED_DT`, `CREATED_USER_ID`, `UPDATED_DT`, `UPDATED_USER_ID`)
+VALUES (replace(UUID(),'-',''), (select id from sys_role where role_code = '1001'), (select id from sys_func where FUNC_CODE = 'MENU_SETTING'), sysdate(), '1', sysdate(), '1');
+INSERT INTO `sys_role_func`(`ID`, `ROLE_ID`, `FUNC_ID`, `CREATED_DT`, `CREATED_USER_ID`, `UPDATED_DT`, `UPDATED_USER_ID`)
+VALUES (replace(UUID(),'-',''), (select id from sys_role where role_code = '1001'), (select id from sys_func where FUNC_CODE = 'AUTHORITY_MANAGE'), sysdate(), '1', sysdate(), '1');
+INSERT INTO `sys_role_func`(`ID`, `ROLE_ID`, `FUNC_ID`, `CREATED_DT`, `CREATED_USER_ID`, `UPDATED_DT`, `UPDATED_USER_ID`)
+VALUES (replace(UUID(),'-',''), (select id from sys_role where role_code = '1001'), (select id from sys_func where FUNC_CODE = 'USER_MANAGE'), sysdate(), '1', sysdate(), '1');
+INSERT INTO `sys_role_func`(`ID`, `ROLE_ID`, `FUNC_ID`, `CREATED_DT`, `CREATED_USER_ID`, `UPDATED_DT`, `UPDATED_USER_ID`)
+VALUES (replace(UUID(),'-',''), (select id from sys_role where role_code = '1001'), (select id from sys_func where FUNC_CODE = 'NEW_USER'), sysdate(), '1', sysdate(), '1');
+INSERT INTO `sys_role_func`(`ID`, `ROLE_ID`, `FUNC_ID`, `CREATED_DT`, `CREATED_USER_ID`, `UPDATED_DT`, `UPDATED_USER_ID`)
+VALUES (replace(UUID(),'-',''), (select id from sys_role where role_code = '1001'), (select id from sys_func where FUNC_CODE = 'ROLE_MANAGE'), sysdate(), '1', sysdate(), '1');
+INSERT INTO `sys_role_func`(`ID`, `ROLE_ID`, `FUNC_ID`, `CREATED_DT`, `CREATED_USER_ID`, `UPDATED_DT`, `UPDATED_USER_ID`)
+VALUES (replace(UUID(),'-',''), (select id from sys_role where role_code = '1001'), (select id from sys_func where FUNC_CODE = 'ROLE_RESOURCES'), sysdate(), '1', sysdate(), '1');
+INSERT INTO `sys_role_func`(`ID`, `ROLE_ID`, `FUNC_ID`, `CREATED_DT`, `CREATED_USER_ID`, `UPDATED_DT`, `UPDATED_USER_ID`)
+VALUES (replace(UUID(),'-',''), (select id from sys_role where role_code = '1001'), (select id from sys_func where FUNC_CODE = 'ROLE_MEMBERS'), sysdate(), '1', sysdate(), '1');
+INSERT INTO `sys_role_func`(`ID`, `ROLE_ID`, `FUNC_ID`, `CREATED_DT`, `CREATED_USER_ID`, `UPDATED_DT`, `UPDATED_USER_ID`)
+VALUES (replace(UUID(),'-',''), (select id from sys_role where role_code = '1001'), (select id from sys_func where FUNC_CODE = 'ADD_USER'), sysdate(), '1', sysdate(), '1');
+INSERT INTO `sys_role_func`(`ID`, `ROLE_ID`, `FUNC_ID`, `CREATED_DT`, `CREATED_USER_ID`, `UPDATED_DT`, `UPDATED_USER_ID`)
+VALUES (replace(UUID(),'-',''), (select id from sys_role where role_code = '1001'), (select id from sys_func where FUNC_CODE = 'ROLE_EDIT'), sysdate(), '1', sysdate(), '1');
+INSERT INTO `sys_role_func`(`ID`, `ROLE_ID`, `FUNC_ID`, `CREATED_DT`, `CREATED_USER_ID`, `UPDATED_DT`, `UPDATED_USER_ID`)
+VALUES (replace(UUID(),'-',''), (select id from sys_role where role_code = '1001'), (select id from sys_func where FUNC_CODE = 'SYSTEM_MANAGE'), sysdate(), '1', sysdate(), '1');
+INSERT INTO `sys_role_func`(`ID`, `ROLE_ID`, `FUNC_ID`, `CREATED_DT`, `CREATED_USER_ID`, `UPDATED_DT`, `UPDATED_USER_ID`)
+VALUES (replace(UUID(),'-',''), (select id from sys_role where role_code = '1001'), (select id from sys_func where FUNC_CODE = 'TIME_TASK'), sysdate(), '1', sysdate(), '1');
+INSERT INTO `sys_role_func`(`ID`, `ROLE_ID`, `FUNC_ID`, `CREATED_DT`, `CREATED_USER_ID`, `UPDATED_DT`, `UPDATED_USER_ID`)
+VALUES (replace(UUID(),'-',''), (select id from sys_role where role_code = '1001'), (select id from sys_func where FUNC_CODE = 'EDIT_TASK'), sysdate(), '1', sysdate(), '1');
+INSERT INTO `sys_role_func`(`ID`, `ROLE_ID`, `FUNC_ID`, `CREATED_DT`, `CREATED_USER_ID`, `UPDATED_DT`, `UPDATED_USER_ID`)
+VALUES (replace(UUID(),'-',''), (select id from sys_role where role_code = '1001'), (select id from sys_func where FUNC_CODE = 'LOG_MANAGE'), sysdate(), '1', sysdate(), '1');
+INSERT INTO `sys_role_func`(`ID`, `ROLE_ID`, `FUNC_ID`, `CREATED_DT`, `CREATED_USER_ID`, `UPDATED_DT`, `UPDATED_USER_ID`)
+VALUES (replace(UUID(),'-',''), (select id from sys_role where role_code = '1001'), (select id from sys_func where FUNC_CODE = 'E_INVOICE_SYSTEM'), sysdate(), '1', sysdate(), '1');

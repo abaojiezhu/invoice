@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="EncryptKeyMapper">
+
+	<select id="findByAppId" parameterType="String" resultType="pd">
+		select
+			t.APP_ID,
+			t.ENCRYPT_KEY
+		from sys_encrypt_key t
+		where t.APP_ID = #{appId}
+	</select>
+
+</mapper>

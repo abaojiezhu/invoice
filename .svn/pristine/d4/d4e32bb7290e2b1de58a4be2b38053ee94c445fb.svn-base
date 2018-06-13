@@ -1,0 +1,87 @@
+package com.ztessc.einvoice.interceptor;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
+import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
+
+import com.ztessc.einvoice.cache.AppSingleDeviceLoginCache;
+import com.ztessc.einvoice.util.Const;
+import com.ztessc.einvoice.util.JwtUtil;
+import com.ztessc.einvoice.util.MessageUtil;
+import com.ztessc.einvoice.util.PageData;
+
+/**
+ * App单一设备登录拦截器，目前一个帐号只允许在一台设备上登录，在多台登录会把上次登录的设备踢下线
+ * Copyright © 2018 zte. All rights reserved.
+ * @Description: TODO
+ * @Title: AppSingleDeviceLoginInterceptor.java 
+ * @Prject: ztessc-einvoice
+ * @Package: com.ztessc.einvoice.interceptor 
+ * @ClassName: AppSingleDeviceLoginInterceptor 
+ * @author: 徐益森   
+ * @date: 2018年6月4日 上午10:03:25 
+ * @version: V1.0.0
+ */
+public class AppSingleDeviceLoginInterceptor extends HandlerInterceptorAdapter {
+	
+	private static final String message = "您的帐号在其他设备登录,您被迫下线!";
+	
+	//需要放行的url
+	private String[] excludePaths = new String[]{"/init/login","/init/logout"};
+		
+	@Autowired
+	private AppSingleDeviceLoginCache appSingleDeviceLoginCache;
+	
+	@Autowired
+	private Environment env;
+	
+	@Override
+	public boolean preHandle(HttpServletRequest request,
+			HttpServletResponse response, Object handler) throws Exception  {
+		boolean include = this.include(request, response);
+		if(include) {
+			return super.preHandle(request, response, handler);
+		}
+		
+		//是否开启单设备登录
+		String singleDeviceLogin = env.getProperty("app.singleDeviceLogin", "true");
+		
+		if("true".equals(singleDeviceLogin)) {
+			String userId = this.getCurrentUserId(request, response);
+			if(!appSingleDeviceLoginCache.get(userId).equals(request.getHeader(Const.HEADER_DEVICE_TOKEN))) {
+				response.setContentType("application/json; charset=utf-8");
+				response.getWriter().append(MessageUtil.getErrorMessage(message).toString());
+				return false;
+			}
+		}
+		
+		return super.preHandle(request, response, handler);
+	}
+    
+	private String getCurrentUserId(HttpServletRequest request, HttpServletResponse response) {
+		if(request.getAttribute(Const.SESSION_LOGIN_USER) != null) {
+			return ((PageData)request.getAttribute(Const.SESSION_LOGIN_USER)).getString("id");
+		}
+		if(StringUtils.isNotBlank(request.getHeader(Const.JWT_TOKEN_NAME))) {
+			return JwtUtil.getUserId(request.getHeader(Const.JWT_TOKEN_NAME));
+		}
+		return null;
+	}
+	
+	/**
+	 * 判断当前url是否需要放行
+	 */
+    private boolean include(HttpServletRequest request, HttpServletResponse response) {
+    	String url = request.getRequestURI();
+        for (String exclude : excludePaths) {
+			if (url.endsWith(exclude)) {
+				return true;
+			}
+		}
+		return false;
+    }
+}

@@ -1,0 +1,32 @@
+//package com.ztessc.einvoice.cache;
+//
+//import org.springframework.beans.factory.annotation.Autowired;
+//import org.springframework.data.redis.core.RedisTemplate;
+//import org.springframework.data.redis.core.ValueOperations;
+//import org.springframework.stereotype.Repository;
+//
+//import com.ztessc.einvoice.util.PageData;
+//
+//@Repository
+//public class UserCache {
+//
+//	private final static String  CACHE_PREFIX_USER = "user:";
+//	
+//	@Autowired
+//    private RedisTemplate<String, PageData> redisTemplate;
+//	
+//	public void cache(PageData user) {
+//		ValueOperations<String, PageData> opsForValue = redisTemplate.opsForValue();
+//		opsForValue.set(CACHE_PREFIX_USER + user.getString("id"), user);
+//	}
+//
+//	public PageData getUser(String key) {
+//		ValueOperations<String, PageData> opsForValue = redisTemplate.opsForValue();
+//		return opsForValue.get(key);
+//	}
+//	
+//	public void clear(String key) {
+//		redisTemplate.delete(key);
+//	}
+//	
+//}

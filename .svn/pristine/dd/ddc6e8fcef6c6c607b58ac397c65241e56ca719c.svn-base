@@ -1,0 +1,41 @@
+package com.ztessc.einvoice.invoicecheck.hante;
+
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+
+import com.ztessc.einvoice.util.MD5;
+
+public class Sign {
+
+	// main调用方法
+	public static void main(String[] args) {
+
+		String secretKey = "p@ssW0rd";// 私钥
+		String application = "10001";// 应用id
+		String timestamp = new java.text.SimpleDateFormat("yyyyMMddHHmmss").format(new java.util.Date());
+		Map<String, Object> map = new HashMap<String, Object>();
+		String data = "{\"fapdm\":\"044001500111\",\"faphm\":\"91398776\"}";
+		map.put("application", application);
+		map.put("request_time", timestamp);
+		map.put("data ", data);
+System.out.println("map=======" + map);		
+		String digest = sign(map, secretKey);
+		System.out.println(digest);
+	}
+
+	// 得到签名值
+	public static String sign(Map<String, Object> map, String secretKey) {
+		StringBuilder contentBuffer = new StringBuilder();
+		Object[] signParamArray = map.keySet().toArray();
+		Arrays.sort(signParamArray);
+		for (Object key : signParamArray) {
+			Object value = map.get(key);
+			if (!"digest".equals(key) && value != null) {
+				contentBuffer.append(key + "=" + value + "&");
+			}
+		}
+		return MD5.md5(contentBuffer.substring(0,contentBuffer.length() - 1) + secretKey);
+	}
+
+}

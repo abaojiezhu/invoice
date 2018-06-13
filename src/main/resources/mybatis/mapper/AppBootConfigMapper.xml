@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="AppBootConfigMapper">
+
+	<select id="listBootConfigs" parameterType="pd" resultType="pd">
+		select
+			t.ID,
+			t.IMG_NAME,
+			t.IMG_DESC,
+			t.FILE_NAME,
+			t.REAL_NAME,
+			t.ENABLED,
+			d.DIC_VALUE ENABLED_VALUE,
+			t.UPDATED_DT
+		from app_boot_config t
+		left join sys_dictionary d on d.DIC_KEY = t.ENABLED
+	</select>
+
+	<select id="findBootConfig" parameterType="pd" resultType="pd">
+		select
+			t.IMG_NAME,
+			t.IMG_DESC,
+			t.FILE_NAME
+		from app_boot_config t
+		where t.ENABLED = 'Z001001'
+		<if test="id != null" >
+			and t.ID != #{id}
+		</if>
+	</select>
+	
+	<select id="findByName" parameterType="pd" resultType="pd">
+		select
+			t.IMG_NAME,
+			t.IMG_DESC,
+			t.FILE_NAME,
+			t.ENABLED
+		from app_boot_config t
+		where t.IMG_NAME = #{imgName}
+		<if test="id != null" >
+			and t.ID != #{id}
+		</if>
+	</select>
+	
+	<select id="findById" parameterType="pd" resultType="pd">
+		select
+			t.IMG_NAME,
+			t.IMG_DESC,
+			t.FILE_NAME,
+			t.ENABLED
+		from app_boot_config t
+		where t.ID = #{id}
+	</select>
+
+	<insert id="save" parameterType="pd">
+		insert into app_boot_config
+		<trim prefix="(" suffix=")" suffixOverrides="," >
+			<if test="id != null" >
+				ID,
+			</if>
+			<if test="imgName != null" >
+				IMG_NAME,
+			</if>
+			<if test="imgDesc != null" >
+				IMG_DESC,
+			</if>
+			<if test="fileName != null" >
+				FILE_NAME,
+			</if>
+			<if test="realName != null" >
+				REAL_NAME,
+			</if>
+			<if test="enabled != null" >
+				ENABLED,
+			</if>
+			<if test="createdDt != null" >
+				CREATED_DT,
+			</if>
+			<if test="createdUserId != null" >
+				CREATED_USER_ID,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides="," >
+			<if test="id != null" >
+				#{id},
+			</if>
+			<if test="imgName != null" >
+				#{imgName},
+			</if>
+			<if test="imgDesc != null" >
+				#{imgDesc},
+			</if>
+			<if test="fileName != null" >
+				#{fileName},
+			</if>
+			<if test="realName != null" >
+				#{realName},
+			</if>
+			<if test="enabled != null" >
+				#{enabled},
+			</if>
+			<if test="createdDt != null" >
+				#{createdDt},
+			</if>
+			<if test="createdUserId != null" >
+				#{createdUserId},
+			</if>
+		</trim>
+	</insert>
+
+	<update id="update" parameterType="pd">
+		update app_boot_config t
+		<set>
+			<if test="imgName != null" >
+				t.IMG_NAME = #{imgName},
+			</if>
+			<if test="imgDesc != null" >
+				t.IMG_DESC = #{imgDesc},
+			</if>
+			<if test="fileName != null" >
+				t.FILE_NAME = #{fileName},
+			</if>
+			<if test="realName != null" >
+				t.REAL_NAME = #{realName},
+			</if>
+			<if test="enabled != null" >
+				t.ENABLED = #{enabled},
+			</if>
+			<if test="updatedDt != null" >
+				t.UPDATED_DT = #{updatedDt},
+			</if>
+			<if test="updatedUserId != null" >
+				t.UPDATED_USER_ID = #{updatedUserId},
+			</if>
+		</set>
+		where t.ID = #{id}
+	</update>
+
+	<delete id="delete" parameterType="pd">
+		delete t.* from app_boot_config t
+		where t.ID = #{id}
+	</delete>
+
+</mapper>

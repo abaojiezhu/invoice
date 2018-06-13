@@ -1,0 +1,303 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="SysRoleMapper">
+
+
+	<select id="listSysRole" parameterType="pd" resultType="pd">
+		select t.ID,t.ROLE_CODE,t.ROLE_NAME,t.REMARK,t.CREATED_DT,t.CREATED_USER_ID,t.UPDATED_DT,t.UPDATED_USER_ID from sys_role t  
+		<where>
+			<if test="roleName != null" >
+				t.ROLE_NAME  like CONCAT('%',#{roleName},'%')
+			</if>
+		</where>
+		
+	</select>
+	
+	<!-- 获取修改角色信息 -->
+	<select id="findSysRoleById" parameterType="pd" resultType="pd">
+		select ID,ROLE_CODE,ROLE_NAME,REMARK,CREATED_DT,CREATED_USER_ID,UPDATED_DT,UPDATED_USER_ID from sys_role where ID = #{id} 
+	</select>
+	
+	
+	<select id="findSysRoleByRoleId" parameterType="pd" resultType="pd">
+		select sr.ID,sr.ROLE_CODE,sr.ROLE_NAME,sr.REMARK,sr.CREATED_DT,sr.CREATED_USER_ID,sr.UPDATED_DT,sr.UPDATED_USER_ID from sys_role sr 
+		  inner join sys_role_user sru on sr.id = sru.role_id
+		  where sru.ROLE_ID = #{roleId}
+		
+	</select>
+	
+	
+	
+	<!-- 新增角色 -->
+	<insert id="save" parameterType="pd">
+		insert into sys_role
+		<trim prefix="(" suffix=")" suffixOverrides="," >
+			<if test="id != null" >
+				ID,
+			</if>
+			<if test="roleCode != null" >
+				ROLE_CODE,
+			</if>
+			<if test="roleName != null" >
+				ROLE_NAME,
+			</if>
+			<if test="remark != null" >
+				REMARK,
+			</if>
+			<if test="createdDt != null" >
+				CREATED_DT,
+			</if>
+			<if test="createdUserId != null" >
+				CREATED_USER_ID,
+			</if>
+			<if test="updatedDt != null" >
+				UPDATED_DT,
+			</if>
+			<if test="updatedUserId != null" >
+				UPDATED_USER_ID,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides="," >
+			<if test="id != null" >
+				#{id},
+			</if>
+			<if test="roleCode != null" >
+				 #{roleCode},
+			</if>
+			<if test="roleName != null" >
+				 #{roleName},
+			</if>
+			<if test="remark != null" >
+				 #{remark},
+			</if>
+			<if test="createdDt != null" >
+				 #{createdDt},
+			</if>
+			<if test="createdUserId != null" >
+				 #{createdUserId},
+			</if>
+			<if test="updatedDt != null" >
+				#{updatedDt},
+			</if>
+			<if test="updatedUserId != null" >
+				#{updatedUserId},
+			</if>
+		</trim>
+	</insert>
+	
+	<!-- 修改角色 -->
+	<update id="update" parameterType="pd">
+		update sys_role
+		<set>
+			<if test="roleCode != null" >
+				ROLE_CODE = #{roleCode},
+			</if>
+			<if test="roleName != null" >
+				ROLE_NAME = #{roleName},
+			</if>
+			<if test="remark != null" >
+				REMARK = #{remark},
+			</if>
+			<if test="updatedUserId != null" >
+				UPDATED_USER_ID = #{updatedUserId},
+			</if>
+			<if test="updatedDt != null" >
+				UPDATED_DT = #{updatedDt}
+			</if>
+		</set>
+		where ID = #{id}
+	</update>
+	
+	
+	
+	<!-- 查询角色对应下的成员信息 -->
+	<select id="ListSysRoleUserInfo" parameterType="pd" resultType="pd">
+		select a.id , b.user_name , b.account_no 
+				from sys_role_user a 
+				inner join base_user b on a.user_id=b.id
+				<where>
+					a.role_id=#{roleId} 
+					<if test="accountNo != null">
+						and b.account_no like CONCAT('%',#{accountNo},'%')
+					</if>
+					<if test="userName != null">
+						and b.user_name like CONCAT('%',#{userName},'%')
+					</if>
+					
+				</where> 
+	</select>
+	
+	<!-- 删除用户角色 -->
+	<delete id="deleteRoleUserById"  parameterType="pd">
+		delete from sys_role_user  where id = #{id} 
+	</delete>
+	
+	
+	
+	
+	<!-- 查询新增角色用户信息 -->
+	<select id="listAddRoleUsers" parameterType="pd" resultType="pd">
+		select DISTINCT a.account_no , a.user_name , a.id
+			from base_user a
+			left join sys_role_user sru on sru.USER_ID = a.id
+			<where>
+				 a.ID not in(select b.user_id from
+				sys_role_user b where b.role_id=#{roleId}
+				)
+				<if test="accountNo != null">
+						and a.account_no like CONCAT('%',#{accountNo},'%')
+				</if>
+					<if test="userName != null">
+						and a.user_name like CONCAT('%',#{userName},'%')
+				</if>
+			</where>
+	</select>
+	
+	
+	<!-- 新增角色用户 -->
+	<insert id="assignRoles" parameterType="pd">
+	 insert into sys_role_user
+		<trim prefix="(" suffix=")" suffixOverrides="," >
+			<if test="id != null" >
+				ID,
+			</if>
+			<if test="roleId != null" >
+				ROLE_ID,
+			</if>
+			<if test="userId != null" >
+				USER_ID,
+			</if>
+			<if test="createdDt != null" >
+				CREATED_DT,
+			</if>
+			<if test="createdUserId != null" >
+				CREATED_USER_ID,
+			</if>
+			<if test="updatedDt != null" >
+				UPDATED_DT,
+			</if>
+			<if test="updatedUserId != null" >
+				UPDATED_USER_ID,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides="," >
+			<if test="id != null" >
+				#{id},
+			</if>
+			<if test="roleId != null" >
+				 #{roleId},
+			</if>
+			<if test="userId != null" >
+				 #{userId},
+			</if>
+			<if test="createdDt != null" >
+				 #{createdDt},
+			</if>
+			<if test="createdUserId != null" >
+				 #{createdUserId},
+			</if>
+			<if test="updatedDt != null" >
+				#{updatedDt},
+			</if>
+			<if test="updatedUserId != null" >
+				#{updatedUserId},
+			</if>
+		</trim>
+		
+	</insert>
+	
+	<!-- 对应角色查询角色权限 -->
+	<select id="listSysFunc" parameterType="pd" resultType="pd">
+		select ID,FUNC_CODE,FUNC_NAME,FUNC_URL,PARENT_ID,TYPE_LEVEL,SORT,CREATED_DT,CREATED_USER_ID,UPDATED_DT,UPDATED_USER_ID from sys_func
+	</select>
+	
+	<!-- 对应角色查询角色权限 -->
+	<select id="listSysRoleFunc" parameterType="pd" resultType="pd">
+		
+		select sf.ID,sf.FUNC_CODE,sf.FUNC_NAME,sf.FUNC_URL,sf.PARENT_ID,sf.TYPE_LEVEL,sf.SORT,sf.CREATED_DT,sf.CREATED_USER_ID,
+		sf.UPDATED_DT,sf.UPDATED_USER_ID from sys_role_func srf
+			inner join sys_func  sf on srf.func_id = sf.id
+		  where srf.role_id = #{roleId}
+		
+	</select>
+	
+	<!-- 清除角色对应的权限 -->
+	<delete id="deleteSysRoleFunc" parameterType="pd">
+		delete from sys_role_func  where role_id = #{roleId}
+	</delete>
+	
+	
+	<insert id="saveSysRoleFunc"  parameterType="pd">
+		 insert into sys_role_func
+		<trim prefix="(" suffix=")" suffixOverrides="," >
+			<if test="id != null" >
+				ID,
+			</if>
+			<if test="roleId != null" >
+				ROLE_ID,
+			</if>
+			<if test="funcId != null" >
+				FUNC_ID,
+			</if>
+			<if test="createdDt != null" >
+				CREATED_DT,
+			</if>
+			<if test="createdUserId != null" >
+				CREATED_USER_ID,
+			</if>
+			<if test="updatedDt != null" >
+				UPDATED_DT,
+			</if>
+			<if test="updatedUserId != null" >
+				UPDATED_USER_ID,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides="," >
+			<if test="id != null" >
+				#{id},
+			</if>
+			<if test="roleId != null" >
+				 #{roleId},
+			</if>
+			<if test="funcId != null" >
+				 #{funcId},
+			</if>
+			<if test="createdDt != null" >
+				 #{createdDt},
+			</if>
+			<if test="createdUserId != null" >
+				 #{createdUserId},
+			</if>
+			<if test="updatedDt != null" >
+				#{updatedDt},
+			</if>
+			<if test="updatedUserId != null" >
+				#{updatedUserId},
+			</if>
+		</trim>
+	</insert>
+	
+	<!-- 对应角色查询角色权限 -->
+	<select id="findSysFuncById" parameterType="pd" resultType="pd">
+		
+		select ID,FUNC_CODE,FUNC_NAME,FUNC_URL,PARENT_ID,TYPE_LEVEL,SORT,CREATED_DT,CREATED_USER_ID,UPDATED_DT,UPDATED_USER_ID from sys_func 
+			<where>
+				<if test="id  != null">
+				  and 	id =#{id}
+				</if>
+			</where>
+		
+	</select>
+	
+		<select id="findSysFuncByFuncCode" parameterType="pd" resultType="pd">
+		
+		select ID,FUNC_CODE,FUNC_NAME,FUNC_URL,PARENT_ID,TYPE_LEVEL,SORT,CREATED_DT,CREATED_USER_ID,UPDATED_DT,UPDATED_USER_ID from sys_func 
+			<where>
+				<if test="funcCode  != null">
+				  and 	FUNC_CODE =#{funcCode}
+				</if>
+			</where>
+		
+	</select>
+
+</mapper>
